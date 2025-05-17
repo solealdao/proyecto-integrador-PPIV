@@ -23,7 +23,7 @@ export default function AppointmentHome() {
       showClock={true}     
     >
       <ButtonContainer>
-        <MenuCard text="Nuevo Turno" url="#" />
+        <MenuCard text="Nuevo Turno" url="/appointment-new" />
         <MenuCard text="Consultar Turnos" url="#" />
         <MenuCard text="Modificar Turnos" url="#" />
         <MenuCard text="Historial de Turnos" url="#" />
