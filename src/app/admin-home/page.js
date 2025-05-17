@@ -3,7 +3,7 @@
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
-import theme from '@/app/theme';
+import theme from '../theme';
 import LogoutButton from '@/components/LogoutButton';
 
 const ButtonContainer = styled.div`
