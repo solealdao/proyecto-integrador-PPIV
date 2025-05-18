@@ -2,6 +2,7 @@
 
 import theme from '@/app/theme';
 import styled from '@emotion/styled';
+import Clock from './Clock';
 
 const Wrapper = styled.div`
 	min-height: 100vh;
@@ -49,12 +50,13 @@ const Content = styled.div`
 	padding: 20px;
 `;
 
-const PageLayout = ({ children, showImage = false, imageUrl, title }) => {
+const PageLayout = ({ children, showImage = false, imageUrl, title, showClock = false }) => {
 	return (
 		<Wrapper>
 			<Header>
 				{title && <HeaderTitle>{title}</HeaderTitle>}
 				{showImage && <ProfileImage src={imageUrl} alt="Imagen" />}
+				{showClock && <Clock />}
 			</Header>
 			<Content>{children}</Content>
 		</Wrapper>
