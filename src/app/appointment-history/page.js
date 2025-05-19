@@ -1,5 +1,6 @@
 'use client';
-import PageLayout from "@/components/PageLayout";
+
+import PageLayout from '@/components/PageLayout';
 import HistorialTabla from '@/components/history-table';
 
 export default function HistorialDeTurnos() {
@@ -14,5 +15,3 @@ export default function HistorialDeTurnos() {
 		</PageLayout>
 	);
 }
-
-
