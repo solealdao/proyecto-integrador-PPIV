@@ -4,16 +4,6 @@ import theme from '@/app/theme';
 import styled from '@emotion/styled';
 import Clock from './Clock';
 
-//estilos para el calendario
-const CalendarIcon = styled.img`
-	position: absolute;
-	top: 20px;
-	left: 40px;
-	width: 10em;
-	height: 10em;
-	filter: brightness(0) invert(1);
-`;
-
 const Wrapper = styled.div`
 	min-height: 100vh;
 	background-color: ${theme.colors.lightGray};

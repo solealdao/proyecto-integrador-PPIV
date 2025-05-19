@@ -35,26 +35,44 @@ const Tr = styled.tr`
 
 const turnos = [
   {
-    dia: 'Jueves',
-    turno: '14/10/2021 08:00',
+    fecha:"14/10/25",
+    hora: "08:00",
     paciente: 'Acosta Miguel Ángel',
     profesional: 'Alfaya Rodrigo',
-    especialidad: 'Cardiología',
-    os: 'GALENO',
-    cobertura: 'IOMA',
-    saldo: '',
-    observaciones: '',
+    motivo:"Consulta",
+    observaciones: 'Niguna',
   },
   {
-    dia: 'Jueves',
-    turno: '14/10/2021 08:45',
-    paciente: 'Camino Yolanda',
-    profesional: 'Alfaya Rodrigo',
-    especialidad: 'Cardiología',
-    os: 'PARTICULAR',
-    cobertura: 'PARTICULAR',
-    saldo: '900',
-    observaciones: '',
+    fecha:"15/10/25",
+    hora: "09:00",
+    paciente: 'Angelica Ana',
+    profesional: 'Gomez Lorena',
+    motivo:"Consulta Ginecologica",
+    observaciones: '-----',
+  },
+  {
+    fecha:"16/10/25",
+    hora: "10:00",
+    paciente: 'Lopez Juan',
+    profesional: 'Cordero Maria',
+    motivo:"Consulta General",
+    observaciones: '-----',
+  },
+  {
+    fecha:"17/10/25",
+    hora: "10:00",
+    paciente: 'Lopez Juan',
+    profesional: 'Cordero Maria',
+    motivo:"Consulta estudios",
+    observaciones: '-----',
+  },
+  {
+    fecha:"18/10/25",
+    hora: "11:00",
+    paciente: 'Cosme Fulanito',
+    profesional: 'Cordero Maria',
+    motivo:"Consulta General",
+    observaciones: 'Consulta para estudios de control',
   },
  
 ];
@@ -64,28 +82,22 @@ export default function HistorialTabla() {
     <Table>
       <thead>
         <tr>
-          <Th>Día</Th>
-          <Th>Turno</Th>
+          <Th>Fecha</Th>
+          <Th>Hora</Th>
           <Th>Paciente</Th>
-          <Th>Profesional/Estudio</Th>
-          <Th>Especialidad</Th>
-          <Th>OS-MP</Th>
-          <Th>Cobertura</Th>
-          <Th>Saldo</Th>
+          <Th>Medico</Th>
+          <Th>Motivo</Th>
           <Th>Observaciones</Th>
         </tr>
       </thead>
       <tbody>
         {turnos.map((t, i) => (
           <Tr key={i} className={t.cobertura === 'PARTICULAR' ? 'highlight' : ''}>
-            <Td>{t.dia}</Td>
-            <Td>{t.turno}</Td>
+            <Td>{t.fecha}</Td>
+            <Td>{t.hora}</Td>
             <Td>{t.paciente}</Td>
             <Td>{t.profesional}</Td>
-            <Td>{t.especialidad}</Td>
-            <Td>{t.os}</Td>
-            <Td>{t.cobertura}</Td>
-            <Td>{t.saldo}</Td>
+            <Td>{t.motivo}</Td>
             <Td>{t.observaciones}</Td>
           </Tr>
         ))}
