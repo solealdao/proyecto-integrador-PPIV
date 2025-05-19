@@ -4,6 +4,16 @@ import theme from '@/app/theme';
 import styled from '@emotion/styled';
 import Clock from './Clock';
 
+//estilos para el calendario
+const CalendarIcon = styled.img`
+	position: absolute;
+	top: 20px;
+	left: 40px;
+	width: 10em;
+	height: 10em;
+	filter: brightness(0) invert(1);
+`;
+
 const Wrapper = styled.div`
 	min-height: 100vh;
 	background-color: ${theme.colors.lightGray};
@@ -50,10 +60,11 @@ const Content = styled.div`
 	padding: 20px;
 `;
 
-const PageLayout = ({ children, showImage = false, imageUrl, title, showClock = false }) => {
+const PageLayout = ({ children, showImage = false, imageUrl, title, showClock = false, showCalendarIcon = false }) => {
 	return (
 		<Wrapper>
 			<Header>
+			    {showCalendarIcon && <CalendarIcon src="/icono_calendario.svg" alt="Calendario" />}
 				{title && <HeaderTitle>{title}</HeaderTitle>}
 				{showImage && <ProfileImage src={imageUrl} alt="Imagen" />}
 				{showClock && <Clock />}
