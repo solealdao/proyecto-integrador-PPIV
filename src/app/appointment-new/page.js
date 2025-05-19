@@ -28,12 +28,6 @@ const Select = styled.select`
   border: 1px solid #ccc;
 `;
 
-const RadioGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
 const NextButton = styled.button`
   padding: 15px;
   background-color: ${theme.colors.green};
@@ -48,17 +42,16 @@ const NextButton = styled.button`
 `;
 
 export default function SeleccionTurno() {
-  const [tipoTurno, setTipoTurno] = useState('');
   const [medico, setMedico] = useState('');
   const router = useRouter();
 
   const handleSubmit = () => {
-  if (medico) {
-    router.push(`/calendar?medico=${medico}`);
-  } else {
-    alert('Por favor, seleccioná un médico');
-  }
-};
+    if (medico) {
+      router.push(`/calendar?medico=${encodeURIComponent(medico)}`);
+    } else {
+      alert('Por favor, seleccioná un médico');
+    }
+  };
 
   return (
     <PageLayout title="Seleccionar turno" showClock>
@@ -66,14 +59,12 @@ export default function SeleccionTurno() {
 
         <Label>Seleccionar médico</Label>
         <Select
-          value={medico}
-          onChange={(e) => setMedico(e.target.value)}
+          value={medico} onChange={(e) => setMedico(e.target.value)}
         >
           <option value="">Seleccione un médico</option>
-          <option value="1">Dra. Valentina Gómez</option>
-          <option value="2">Dr. Luis Fernández</option>
+          <option value="Dra. Valentina Gómez">Dra. Valentina Gómez</option>
+          <option value="Dr. Luis Fernández">Dr. Luis Fernández</option>
         </Select>
-
         <NextButton onClick={handleSubmit}>Siguiente</NextButton>
         <LogoutButton onClick={() => (window.location.href = '/')}>Cancelar</LogoutButton>
       </FormContainer>

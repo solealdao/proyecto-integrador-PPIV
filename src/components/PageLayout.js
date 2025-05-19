@@ -2,7 +2,9 @@
 
 import theme from '@/app/theme';
 import styled from '@emotion/styled';
-import Clock from './Clock';
+import dynamic from 'next/dynamic';
+
+const Clock = dynamic(() => import('./Clock'), { ssr: false });
 
 const Wrapper = styled.div`
 	min-height: 100vh;

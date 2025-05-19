@@ -23,7 +23,7 @@ export default function AdminHome() {
       showClock={true}     
     >
       <ButtonContainer>
-        <MenuCard text="Gestión de Turnos" url="@/appointment-management" />
+        <MenuCard text="Gestión de Turnos" url="/appointment-management" />
         <MenuCard text="Configuraciones" url="#" />
       </ButtonContainer>
 

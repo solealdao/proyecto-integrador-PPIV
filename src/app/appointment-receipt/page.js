@@ -3,6 +3,7 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
+import { useSearchParams } from 'next/navigation';
 
 const Container = styled.div`
 	max-width: 600px;
@@ -55,22 +56,12 @@ const BackButton = styled.button`
 `;
 
 export default function ComprobanteTurno() {
-	// Datos de ejemplo para evitar error
-	const turno = {
-		idTurno: '12345',
-		fechaTurno: '2025-05-20',
-		hora: '10:30',
-	};
-	const patient = {
-		nombreCompleto: 'Juan Pérez',
-	};
-	const doctor = {
-		nombre: 'Valentina Gómez',
-		especialidad: 'Cardiología',
-	};
-
+	const searchParams = useSearchParams();
+  	const medico = searchParams.get('medico');
+  	const fechaTurno = searchParams.get('fecha');
+  	const horaTurno = searchParams.get('hora');
 	const cancelar = () => {
-		window.location.href = '/appointments/appointment-management';
+		window.location.href = '/appointment-management';
 	};
 
 	return (
@@ -79,19 +70,19 @@ export default function ComprobanteTurno() {
 				<Header>
 					<Logo src="/logo.png" alt="Logo" />
 					<Title>Nueva Clinica</Title>
-					<Title>ID: {turno.idTurno}</Title>
+					<Title>ID: -</Title>
 				</Header>
 
 				<InfoRow>
-					<InfoTitle>Paciente: {patient.nombreCompleto}</InfoTitle>
+					<InfoTitle>Paciente: -</InfoTitle>
 				</InfoRow>
 				<InfoRow>
-					<InfoTitle>Profesional: Dr. {doctor.nombre}</InfoTitle>
-				</InfoRow>
+          			<InfoTitle>Profesional: {medico}</InfoTitle>
+        		</InfoRow>
 				<InfoRow>
-					<InfoTitle>Fecha: {turno.fechaTurno}</InfoTitle>
-					<InfoTitle>Hora: {turno.hora}</InfoTitle>
-					<InfoTitle>Especialidad: {doctor.especialidad}</InfoTitle>
+					<InfoTitle>Fecha: {fechaTurno}</InfoTitle>
+					<InfoTitle>Hora: {horaTurno}</InfoTitle>
+					<InfoTitle>Especialidad: Clínica Médica</InfoTitle>
 				</InfoRow>
 
 				<ButtonContainer>

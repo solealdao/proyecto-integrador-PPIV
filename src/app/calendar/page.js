@@ -4,6 +4,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useSearchParams } from 'next/navigation';
 import theme from '@/app/theme';
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
@@ -45,7 +46,15 @@ const ButtonContainer = styled.div`
   flex-wrap: wrap;
 `;
 
+function formatDate(date) {
+  if (!date) return '';
+  const d = new Date(date);
+  return d.toISOString().split('T')[0]; 
+}
+
 export default function NuevoTurnoCalendario() {
+  const searchParams = useSearchParams();
+  const medico = searchParams.get('medico');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
 
@@ -65,6 +74,7 @@ export default function NuevoTurnoCalendario() {
       showClock={true}
     >
       <FormContainer>
+        <Label>Médico: {medico}</Label>
         <Label>Seleccionar fecha:</Label>
         <StyledDatePicker
           selected={selectedDate}
@@ -87,10 +97,15 @@ export default function NuevoTurnoCalendario() {
       </FormContainer>
 
       <ButtonContainer>
-        <LogoutButton onClick={() => window.location.href = '/appointments/appointment-management'}>
+        <LogoutButton onClick={() => window.location.href = '/appointment-management'}>
           Cancelar
         </LogoutButton>
-        <MenuCard text="Confirmar turno" url="#" />
+        {medico && selectedDate && selectedTime && (
+          <MenuCard
+            text="Confirmar turno"
+            url={`/appointment-receipt?medico=${encodeURIComponent(medico)}&fecha=${formatDate(selectedDate)}&hora=${selectedTime}`}
+          />
+        )}
       </ButtonContainer>
     </PageLayout>
   );
