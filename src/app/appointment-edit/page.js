@@ -42,17 +42,20 @@ const ButtonGroup = styled.div`
   flex-wrap: wrap;
 `;
 
-const NextButton = styled.button`
-  padding: 15px;
+const Button = styled.button`
+  padding: 12px 30px;
   background-color: ${theme.colors.green};
   color: ${theme.colors.yellow};
   border-radius: 12px;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   font-family: Mulish, sans-serif;
   border: none;
-  margin-top: 20px;
   cursor: pointer;
+
+  &:hover {
+    background-color: ${theme.colors.darkGreen};
+  }
 `;
 
 const DateInput = styled.input`
@@ -74,7 +77,7 @@ export default function EditarTurno() {
 
   const handleModificarClick = () => {
     if (idTurno.trim() === '') {
-      alert('Por favor ingrese el ID del turno');
+      alert('Por favor, ingrese el ID del turno');
       return;
     }
     setMostrarFormulario(true);
@@ -95,7 +98,7 @@ export default function EditarTurno() {
 
   const handleSubmit = () => {
     if (!medico || !fecha || !horario) {
-      alert('Por favor complete todos los campos');
+      alert('Por favor, complete todos los campos');
       return;
     }
 
@@ -108,7 +111,7 @@ export default function EditarTurno() {
     <PageLayout 
     		showImage={true}
 			imageUrl="/icono_calendario.svg"
-			title="Consultar Turno"
+			title="Modificar Turno"
 			showClock={true}
     >
       
@@ -121,8 +124,8 @@ export default function EditarTurno() {
         />
 
         <ButtonGroup>
-            <NextButton onClick={handleModificarClick}>Modificar</NextButton>
-            <NextButton onClick={() => router.push('/appointment-management')}>Cancelar</NextButton>
+            <Button onClick={handleModificarClick}>Modificar</Button>
+            <Button onClick={() => router.push('/appointment-management')}>Cancelar</Button>
         </ButtonGroup>
 
         {mostrarFormulario && (
@@ -158,7 +161,7 @@ export default function EditarTurno() {
             </Select>
 
             <ButtonGroup>
-                <NextButton onClick={handleSubmit}>Guardar Cambios</NextButton>
+                <Button onClick={handleSubmit}>Guardar Cambios</Button>
             </ButtonGroup>
           </>
         )}

@@ -22,8 +22,8 @@ export default function PatientHome() {
 			showClock={true}
 		>
 			<ButtonContainer>
-				<MenuCard text="Gestión de Turnos" url="#" />
-				<MenuCard text="Mensajería" url="#" />
+				<MenuCard text="Gestión de Turnos" url="/appointment-management" />
+				<MenuCard text="Mensajería" url="/message" />
 			</ButtonContainer>
 
 			<LogoutButton onClick={() => (window.location.href = '/')}>
