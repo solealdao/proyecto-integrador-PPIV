@@ -23,8 +23,8 @@ export default function AppointmentHome() {
 		>
 			<ButtonContainer>
 				<MenuCard text="Nuevo Turno" url="/appointment-new" />
-				<MenuCard text="Consultar Turnos" url="#" />
-				<MenuCard text="Modificar Turnos" url="#" />
+				<MenuCard text="Consultar Turnos" url="/appointment-query" />
+				<MenuCard text="Modificar Turnos" url="appointment-edit" />
 				<MenuCard text="Historial de Turnos" url="#" />
 			</ButtonContainer>
 
