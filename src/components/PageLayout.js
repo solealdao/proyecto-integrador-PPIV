@@ -52,10 +52,11 @@ const Content = styled.div`
 	padding: 20px;
 `;
 
-const PageLayout = ({ children, showImage = false, imageUrl, title, showClock = false }) => {
+const PageLayout = ({ children, showImage = false, imageUrl, title, showClock = false, showCalendarIcon = false }) => {
 	return (
 		<Wrapper>
 			<Header>
+			    {showCalendarIcon && <CalendarIcon src="/icono_calendario.svg" alt="Calendario" />}
 				{title && <HeaderTitle>{title}</HeaderTitle>}
 				{showImage && <ProfileImage src={imageUrl} alt="Imagen" />}
 				{showClock && <Clock />}
