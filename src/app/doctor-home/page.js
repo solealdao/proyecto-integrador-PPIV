@@ -3,6 +3,8 @@
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
+import ButtonsContainer from '@/components/ButtonsContainer';
+import BackButton from '@/components/BackButton';
 import LogoutButton from '@/components/LogoutButton';
 
 const ButtonContainer = styled.div`
@@ -22,14 +24,20 @@ export default function DoctorHome() {
 			showClock={true}
 		>
 			<ButtonContainer>
-				<MenuCard text="Consultar agenda" url="#" />
+				<MenuCard text="Consultar agenda" url="/doctor-schedule" />
 				<MenuCard text="Ver historial" url="#" />
 				<MenuCard text="Ir a mensajería" url="#" />
 			</ButtonContainer>
 
-			<LogoutButton onClick={() => (window.location.href = '/')}>
-				Cerrar Sesión
-			</LogoutButton>
+			<ButtonsContainer>
+					<BackButton onClick={() => (window.location.href = '/')}>
+							Volver atrás
+						</BackButton>
+			
+					<LogoutButton onClick={() => (window.location.href = '/')}>
+							Cerrar Sesión
+						</LogoutButton>
+			</ButtonsContainer>
 		</PageLayout>
 	);
 }
