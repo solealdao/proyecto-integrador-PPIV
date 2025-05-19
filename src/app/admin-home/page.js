@@ -24,7 +24,7 @@ export default function AdminHome() {
     >
       <ButtonContainer>
         <MenuCard text="Gestión de Turnos" url="/appointment-management" />
-        <MenuCard text="Configuraciones" url="#" />
+        <MenuCard text="Ver estadísticas" url="/admin-stats" />
       </ButtonContainer>
 
       <LogoutButton onClick={() => (window.location.href = '/')}>
