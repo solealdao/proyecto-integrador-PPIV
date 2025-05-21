@@ -25,7 +25,7 @@ export default function AppointmentHome() {
 				<MenuCard text="Nuevo Turno" url="/appointment-new" />
 				<MenuCard text="Consultar Turnos" url="/appointment-query" />
 				<MenuCard text="Modificar Turnos" url="appointment-edit" />
-				<MenuCard text="Historial de Turnos" url="#" />
+				<MenuCard text="Historial de Turnos" url="" />
 			</ButtonContainer>
 
 			<LogoutButton onClick={() => (window.location.href = '/')}>
