@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import theme from '@/app/theme';
 import { useRouter } from 'next/navigation';
 
-const StyledLogoutButton = styled.button`
+const StyledBackButton = styled.button`
   padding: 10px 20px;
   color: ${theme.colors.green};
   font-family: Mulish, sans-serif;
@@ -25,12 +25,12 @@ const StyledLogoutButton = styled.button`
   }
 `;
 
-export default function LogoutButton({ to = '/' }) {
+export default function BackButton() {
   const router = useRouter();
 
   return (
-    <StyledLogoutButton onClick={() => router.push(to)}>
-      Cerrar Sesión
-    </StyledLogoutButton>
+    <StyledBackButton onClick={() => router.back()}>
+      Volver atrás
+    </StyledBackButton>
   );
 }
