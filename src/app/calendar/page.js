@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useSearchParams } from 'next/navigation';
 import theme from '@/app/theme';
 import PageLayout from '@/components/PageLayout';
+import { useRouter } from 'next/navigation';
 
 const FormContainer = styled.div`
   display: flex;
@@ -68,6 +69,7 @@ function formatDate(date) {
 
 export default function NuevoTurnoCalendario() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const medico = searchParams.get('medico');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
@@ -114,9 +116,9 @@ export default function NuevoTurnoCalendario() {
 
       <ButtonContainer>
         {medico && selectedDate && selectedTime && (
-          <Button
-            url={`/appointment-receipt?medico=${encodeURIComponent(medico)}&fecha=${formatDate(selectedDate)}&hora=${selectedTime}`}
-          >
+          <Button onClick={() =>
+            router.push(`/appointment-receipt?medico=${encodeURIComponent(medico)}&fecha=${formatDate(selectedDate)}&hora=${selectedTime}`)
+          }>
             Confirmar Turno
           </Button>
         )}
