@@ -7,8 +7,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useSearchParams } from 'next/navigation';
 import theme from '@/app/theme';
 import PageLayout from '@/components/PageLayout';
-import MenuCard from '@/components/MenuCard';
-import LogoutButton from '@/components/LogoutButton';
 
 const FormContainer = styled.div`
   display: flex;
@@ -19,7 +17,7 @@ const FormContainer = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: Mulish;
+  font-family: Mulish, sans-serif;
   font-size: 18px;
   color: ${theme.colors.darkGreen};
 `;
@@ -46,6 +44,22 @@ const ButtonContainer = styled.div`
   flex-wrap: wrap;
 `;
 
+const Button = styled.button`
+  padding: 12px 30px;
+  background-color: ${theme.colors.green};
+  color: ${theme.colors.yellow};
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: Mulish, sans-serif;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${theme.colors.darkGreen};
+  }
+`;
+
 function formatDate(date) {
   if (!date) return '';
   const d = new Date(date);
@@ -69,10 +83,12 @@ export default function NuevoTurnoCalendario() {
   ];
 
   return (
-    <PageLayout
-      title="Seleccionar día y horario"
-      showClock={true}
-    >
+    	<PageLayout
+        showImage={true}
+        imageUrl="/icono_calendario.svg"
+        title="Seleccionar día y horario"
+        showClock={true}
+		  >
       <FormContainer>
         <Label>Médico: {medico}</Label>
         <Label>Seleccionar fecha:</Label>
@@ -81,7 +97,7 @@ export default function NuevoTurnoCalendario() {
           onChange={(date) => setSelectedDate(date)}
           dateFormat="dd/MM/yyyy"
           minDate={new Date()}
-          placeholderText="Elegí una fecha"
+          placeholderText="-- Elija una fecha --"
         />
 
         <Label>Seleccionar horario:</Label>
@@ -89,7 +105,7 @@ export default function NuevoTurnoCalendario() {
           value={selectedTime}
           onChange={(e) => setSelectedTime(e.target.value)}
         >
-          <option value="">-- Seleccioná un horario --</option>
+          <option value="">-- Seleccione un horario --</option>
           {horariosDisponibles.map((hora) => (
             <option key={hora} value={hora}>{hora}</option>
           ))}
@@ -97,14 +113,12 @@ export default function NuevoTurnoCalendario() {
       </FormContainer>
 
       <ButtonContainer>
-        <LogoutButton onClick={() => window.location.href = '/appointment-management'}>
-          Cancelar
-        </LogoutButton>
         {medico && selectedDate && selectedTime && (
-          <MenuCard
-            text="Confirmar turno"
+          <Button
             url={`/appointment-receipt?medico=${encodeURIComponent(medico)}&fecha=${formatDate(selectedDate)}&hora=${selectedTime}`}
-          />
+          >
+            Confirmar Turno
+          </Button>
         )}
       </ButtonContainer>
     </PageLayout>

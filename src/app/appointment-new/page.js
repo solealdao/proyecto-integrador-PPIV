@@ -3,7 +3,6 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
-import LogoutButton from '@/components/LogoutButton';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -38,7 +37,13 @@ const NextButton = styled.button`
   font-family: Mulish, sans-serif;
   border: none;
   margin-top: 20px;
+  width: fit-content;
   cursor: pointer;
+  align-self: flex-end;
+
+  &:hover {
+    background-color: ${theme.colors.darkGreen};
+  }
 `;
 
 export default function SeleccionTurno() {
@@ -49,15 +54,20 @@ export default function SeleccionTurno() {
     if (medico) {
       router.push(`/calendar?medico=${encodeURIComponent(medico)}`);
     } else {
-      alert('Por favor, seleccioná un médico');
+      alert('Por favor, seleccione un médico');
     }
   };
 
   return (
-    <PageLayout title="Seleccionar turno" showClock>
-      <FormContainer>
+    	<PageLayout
+        showImage={true}
+        imageUrl="/icono_calendario.svg"
+        title="Gestión de Turnos"
+        showClock={true}
+		  >
 
-        <Label>Seleccionar médico</Label>
+      <FormContainer>
+        <Label>Seleccionar médico:</Label>
         <Select
           value={medico} onChange={(e) => setMedico(e.target.value)}
         >
@@ -66,7 +76,6 @@ export default function SeleccionTurno() {
           <option value="Dr. Luis Fernández">Dr. Luis Fernández</option>
         </Select>
         <NextButton onClick={handleSubmit}>Siguiente</NextButton>
-        <LogoutButton onClick={() => (window.location.href = '/')}>Cancelar</LogoutButton>
       </FormContainer>
     </PageLayout>
   );

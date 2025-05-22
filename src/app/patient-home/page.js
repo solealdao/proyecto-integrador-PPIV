@@ -3,7 +3,6 @@
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
-import LogoutButton from '@/components/LogoutButton';
 import useAuth from '@/hooks/useAuth';
 import useRoleGuard from '@/hooks/useRoleGuard';
 
@@ -29,17 +28,6 @@ export default function PatientHome() {
 			<ButtonContainer>
 				<MenuCard text="Gestión de Turnos" url="/appointment-management" />
 				<MenuCard text="Mensajería" url="/message" />
-			</ButtonContainer>
-
-			<ButtonContainer>
-				<LogoutButton
-					onClick={() => {
-						logout();
-						window.location.href = '/';
-					}}
-				>
-					Cerrar Sesión
-				</LogoutButton>
 			</ButtonContainer>
 		</PageLayout>
 	);

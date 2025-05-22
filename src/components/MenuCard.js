@@ -7,7 +7,7 @@ import Link from 'next/link';
 const Card = styled.div`
 	background-color: ${theme.colors.green};
 	color: ${theme.colors.yellow};
-	padding: 40px 60px;
+	padding: 30px;
 	border-radius: 16px;
 	box-shadow: 4px 6px 15px rgba(0, 0, 0, 0.2);
 	text-align: center;
@@ -16,6 +16,11 @@ const Card = styled.div`
 	cursor: pointer;
 	transition: transform 0.2s ease;
 	text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+	width: 220px;
+	height: 120px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
 	&:hover {
 		transform: scale(1.05);

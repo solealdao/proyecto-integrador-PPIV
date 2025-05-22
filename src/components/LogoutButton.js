@@ -3,25 +3,28 @@
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPowerOff } from '@fortawesome/free-solid-svg-icons';
 
 const StyledLogoutButton = styled.button`
-  padding: 10px 20px;
-  color: ${theme.colors.green};
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+  padding: 8px 12px;
+  color: ${theme.colors.darkGreen};
   font-family: Mulish, sans-serif;
   font-weight: bold;
-  font-size: 30px;
-  width: 250px;
-  height: 130px;
-  opacity: 1;
+  font-size: 14px;
   text-align: center;
   background: ${theme.colors.yellow};
-  border-radius: 17px;
+  border-radius: 8px;
   border: none;
-  margin: 10px;
+  margin: 0 5px;
   cursor: pointer;
 
   &:hover {
-    opacity: 0.9;
+    background: ${theme.colors.green};
+    color: ${theme.colors.white};
   }
 `;
 
@@ -30,7 +33,8 @@ export default function LogoutButton({ to = '/' }) {
 
   return (
     <StyledLogoutButton onClick={() => router.push(to)}>
-      Cerrar Sesión
+      <FontAwesomeIcon icon={faPowerOff} />
+        Cerrar Sesión
     </StyledLogoutButton>
   );
 }
