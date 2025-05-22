@@ -4,6 +4,7 @@ import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
 import LogoutButton from '@/components/LogoutButton';
+import useAuth from '@/hooks/useAuth';
 
 const ButtonContainer = styled.div`
 	display: flex;
@@ -14,11 +15,13 @@ const ButtonContainer = styled.div`
 `;
 
 export default function PatientHome() {
+	const { user, logout } = useAuth();
+	const fullName = user ? `${user.first_name} ${user.last_name}` : 'Paciente';
 	return (
 		<PageLayout
 			showImage={true}
 			imageUrl="/patient_profile.jpeg"
-			title={'María González'}
+			title={fullName}
 			showClock={true}
 		>
 			<ButtonContainer>
@@ -26,9 +29,16 @@ export default function PatientHome() {
 				<MenuCard text="Mensajería" url="/message" />
 			</ButtonContainer>
 
-			<LogoutButton onClick={() => (window.location.href = '/')}>
-				Cerrar Sesión
-			</LogoutButton>
+			<ButtonContainer>
+				<LogoutButton
+					onClick={() => {
+						logout();
+						window.location.href = '/';
+					}}
+				>
+					Cerrar Sesión
+				</LogoutButton>
+			</ButtonContainer>
 		</PageLayout>
 	);
 }
