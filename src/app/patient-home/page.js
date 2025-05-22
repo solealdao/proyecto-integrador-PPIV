@@ -5,6 +5,7 @@ import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
 import LogoutButton from '@/components/LogoutButton';
 import useAuth from '@/hooks/useAuth';
+import useRoleGuard from '@/hooks/useRoleGuard';
 
 const ButtonContainer = styled.div`
 	display: flex;
@@ -15,6 +16,7 @@ const ButtonContainer = styled.div`
 `;
 
 export default function PatientHome() {
+	useRoleGuard([1]);
 	const { user, logout } = useAuth();
 	const fullName = user ? `${user.first_name} ${user.last_name}` : 'Paciente';
 	return (
