@@ -6,6 +6,8 @@ import styled from '@emotion/styled';
 import ButtonsContainer from '@/components/ButtonsContainer';
 import BackButton from '@/components/BackButton';
 import LogoutButton from '@/components/LogoutButton';
+import useAuth from '@/hooks/useAuth';
+import useRoleGuard from '@/hooks/useRoleGuard';
 
 const ButtonContainer = styled.div`
 	display: flex;
@@ -16,11 +18,15 @@ const ButtonContainer = styled.div`
 `;
 
 export default function DoctorHome() {
+	useRoleGuard([2]);
+	const { user, logout } = useAuth();
+	const fullName = user ? `${user.first_name} ${user.last_name}` : 'Doctor/a';
+
 	return (
 		<PageLayout
 			showImage={true}
 			imageUrl="/doctor_profile.jpg"
-			title="Valentina Gómez"
+			title={fullName}
 			showClock={true}
 		>
 			<ButtonContainer>
@@ -30,13 +36,14 @@ export default function DoctorHome() {
 			</ButtonContainer>
 
 			<ButtonsContainer>
-					<BackButton onClick={() => (window.location.href = '/')}>
-							Volver atrás
-						</BackButton>
-			
-					<LogoutButton onClick={() => (window.location.href = '/')}>
-							Cerrar Sesión
-						</LogoutButton>
+				<LogoutButton
+					onClick={() => {
+						logout();
+						window.location.href = '/';
+					}}
+				>
+					Cerrar Sesión
+				</LogoutButton>
 			</ButtonsContainer>
 		</PageLayout>
 	);
