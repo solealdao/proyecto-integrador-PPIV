@@ -3,9 +3,6 @@
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
-import ButtonsContainer from '@/components/ButtonsContainer';
-import BackButton from '@/components/BackButton';
-import LogoutButton from '@/components/LogoutButton';
 import useAuth from '@/hooks/useAuth';
 import useRoleGuard from '@/hooks/useRoleGuard';
 
@@ -34,17 +31,6 @@ export default function DoctorHome() {
 				<MenuCard text="Ver historial" url="#" />
 				<MenuCard text="Ir a mensajería" url="#" />
 			</ButtonContainer>
-
-			<ButtonsContainer>
-				<LogoutButton
-					onClick={() => {
-						logout();
-						window.location.href = '/';
-					}}
-				>
-					Cerrar Sesión
-				</LogoutButton>
-			</ButtonsContainer>
 		</PageLayout>
 	);
 }
