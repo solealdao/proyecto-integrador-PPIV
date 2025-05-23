@@ -44,6 +44,7 @@ cd proyecto-integrador-fe-ppiv
 ```
 
 2. **Instalar dependencias**
+   El proyecto requiere a partir de estas versiones de Node: ^18.18.0 || ^19.8.0 || >= 20.0.0
 
 ```bash
 npm install

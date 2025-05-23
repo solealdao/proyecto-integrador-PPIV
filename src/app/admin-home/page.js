@@ -3,7 +3,6 @@
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
-import LogoutButton from '@/components/LogoutButton';
 import useAuth from '@/hooks/useAuth';
 import useRoleGuard from '@/hooks/useRoleGuard';
 
@@ -32,17 +31,6 @@ export default function AdminHome() {
 			<ButtonContainer>
 				<MenuCard text="Gestión de Turnos" url="/appointment-management" />
 				<MenuCard text="Ver estadísticas" url="/admin-stats" />
-			</ButtonContainer>
-
-			<ButtonContainer>
-				<LogoutButton
-					onClick={() => {
-						logout();
-						window.location.href = '/';
-					}}
-				>
-					Cerrar Sesión
-				</LogoutButton>
 			</ButtonContainer>
 		</PageLayout>
 	);

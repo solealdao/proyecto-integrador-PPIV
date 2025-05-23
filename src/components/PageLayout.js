@@ -3,6 +3,8 @@
 import theme from '@/app/theme';
 import styled from '@emotion/styled';
 import dynamic from 'next/dynamic';
+import NavigationBar from './NavigationBar';
+import LogoutButton from './LogoutButton';
 
 const Clock = dynamic(() => import('./Clock'), { ssr: false });
 
@@ -52,18 +54,50 @@ const Content = styled.div`
 	padding: 20px;
 `;
 
-const PageLayout = ({ children, showImage = false, imageUrl, title, showClock = false, showCalendarIcon = false }) => {
-	return (
-		<Wrapper>
-			<Header>
-			    {showCalendarIcon && <CalendarIcon src="/icono_calendario.svg" alt="Calendario" />}
-				{title && <HeaderTitle>{title}</HeaderTitle>}
-				{showImage && <ProfileImage src={imageUrl} alt="Imagen" />}
-				{showClock && <Clock />}
-			</Header>
-			<Content>{children}</Content>
-		</Wrapper>
-	);
+const LogoutWrapper = styled.div`
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 20;
+`;
+
+const TopLeftBar = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+`;
+
+const TopRightClock = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+`;
+
+const PageLayout = ({
+  children,
+  showImage = false,
+  imageUrl,
+  title,
+  showClock = false,
+  showCalendarIcon = false
+}) => {
+  return (
+    <Wrapper>
+      <Header>
+        {showCalendarIcon && <CalendarIcon src="/icono_calendario.svg" alt="Calendario" />}
+        {title && <HeaderTitle>{title}</HeaderTitle>}
+        {showImage && <ProfileImage src={imageUrl} alt="Imagen" />}
+        {showClock && <Clock />}
+        <LogoutWrapper>
+          <LogoutButton />
+        </LogoutWrapper>
+        <NavigationBar />
+      </Header>
+      <Content>{children}</Content>
+    </Wrapper>
+  );
 };
 
 export default PageLayout;

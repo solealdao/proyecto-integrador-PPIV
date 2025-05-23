@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 import theme from '@/app/theme';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import LogoutButton from '@/components/LogoutButton';
 
 const FormContainer = styled.div`
   display: flex;
@@ -70,7 +69,7 @@ export default function ConsultarTurno() {
 
   return (
     <PageLayout 
-    		showImage={true}
+    	showImage={true}
 			imageUrl="/icono_calendario.svg"
 			title="Consultar Turno"
 			showClock={true}
@@ -85,13 +84,10 @@ export default function ConsultarTurno() {
                 value={turnoId}
                 onChange={(e) => setTurnoId(e.target.value)}
             />
-
             <ButtonGroup>
                 <Button onClick={handleConsultar}>Consultar</Button>
                 <Button onClick={handleCancelar}>Cancelar</Button>
             </ButtonGroup>
-
-            <LogoutButton onClick={() => router.push('/')}>Cerrar Sesión</LogoutButton>
         </FormContainer>
     </PageLayout>
   );
