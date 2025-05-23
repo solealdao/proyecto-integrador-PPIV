@@ -84,10 +84,6 @@ export default function ComprobanteTurno() {
 					<InfoTitle>Hora: {horaTurno}</InfoTitle>
 					<InfoTitle>Especialidad: Clínica Médica</InfoTitle>
 				</InfoRow>
-
-				<ButtonContainer>
-					<BackButton onClick={cancelar}>Volver</BackButton>
-				</ButtonContainer>
 			</Container>
 		</PageLayout>
 	);

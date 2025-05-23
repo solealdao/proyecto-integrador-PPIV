@@ -11,9 +11,6 @@ import {
 } from 'recharts';
 import PageLayout from '@/components/PageLayout';
 import theme from '@/app/theme';
-import LogoutButton from '@/components/LogoutButton';
-import BackButton from '@/components/BackButton';
-import ButtonsContainer from '@/components/ButtonsContainer';
 
 const Container = styled.div`
 	max-width: 900px;
@@ -67,7 +64,12 @@ export default function AdminStats() {
 	const averageScore = 4.1; // Puntaje ficticio
 
 	return (
-		<PageLayout title="Ver estadísticas" showClock>
+			<PageLayout
+			showImage={true}
+			imageUrl="/bar-chart.png"
+			title="Ver Estadísticas"
+			showClock={true}
+		>
 			<Container>
 				<Section>
 					<Title>Puntuación Promedio</Title>
@@ -108,13 +110,6 @@ export default function AdminStats() {
 						<CommentBox key={idx}>{text}</CommentBox>
 					))}
 				</Section>
-				<ButtonsContainer>
-					<BackButton to="/" />
-
-					<LogoutButton onClick={() => (window.location.href = '/')}>
-						Cerrar Sesión
-					</LogoutButton>
-				</ButtonsContainer>
 			</Container>
 		</PageLayout>
 	);

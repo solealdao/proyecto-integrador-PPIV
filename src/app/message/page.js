@@ -130,7 +130,7 @@ export default function MensajesPage() {
   return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/mensajeria.png"
 			title="Mensajería"
 			showClock={true}
 		>

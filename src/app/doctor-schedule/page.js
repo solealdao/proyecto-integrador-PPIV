@@ -5,14 +5,11 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styled from '@emotion/styled';
 import PageLayout from '@/components/PageLayout';
-import ButtonsContainer from '@/components/ButtonsContainer';
-import BackButton from '@/components/BackButton';
-import LogoutButton from '@/components/LogoutButton';
 import theme from '@/app/theme';
 
 const Container = styled.div`
   max-width: 600px;
-  margin: 40px auto;
+  margin: 20px auto;
 `;
 
 const InfoBox = styled.div`
@@ -45,6 +42,20 @@ const ColorBox = styled.div`
   border-radius: 4px;
   background-color: ${(props) => props.color};
   border: 1px solid #999;
+`;
+
+const StyledCalendar = styled(Calendar)`
+  margin: 0 auto; /* centra horizontalmente */
+  font-family: Mulish, sans-serif;
+
+  .react-calendar__tile {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+
+  .react-calendar__navigation {
+    margin-bottom: 10px;
+  }
 `;
 
 export default function DoctorAgenda() {
@@ -96,9 +107,14 @@ export default function DoctorAgenda() {
 }
 
   return (
-    <PageLayout title="Gestión de agenda" showClock>
+		<PageLayout
+			showImage={true}
+			imageUrl="/icono_calendario.svg"
+			title="Gestión de Agenda"
+			showClock={true}
+		>
       <Container>
-        <Calendar onClickDay={onDayClick} tileClassName={tileClassName} tileDisabled={tileDisabled} />
+        <StyledCalendar onClickDay={onDayClick} tileClassName={tileClassName} tileDisabled={tileDisabled} />
         {selectedDate && (
           <InfoBox>
             <p>Seleccionaste: {selectedDate}</p>
@@ -136,14 +152,6 @@ export default function DoctorAgenda() {
           color: black !important;
         }
       `}</style>
-       
-       <ButtonsContainer>
-        <BackButton to="/" />
-
-        <LogoutButton onClick={() => (window.location.href = '/')}>
-                Cerrar Sesión
-            </LogoutButton>
-       </ButtonsContainer>
     </PageLayout>
   );
 }
