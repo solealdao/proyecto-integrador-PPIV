@@ -1,157 +1,317 @@
 'use client';
 
-import { useState } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import PageLayout from '@/components/PageLayout';
 import theme from '@/app/theme';
+import { useRouter } from 'next/navigation';
+import { fetchDoctorAgenda } from '@/api/services/availabilityService';
+import useAuth from '@/hooks/useAuth';
 
 const Container = styled.div`
-  max-width: 600px;
-  margin: 20px auto;
+	max-width: 900px;
+	margin: 20px auto;
 `;
 
-const InfoBox = styled.div`
-  margin-top: 20px;
-  padding: 16px;
-  background-color: #eee;
-  border-radius: 8px;
+const WeekView = styled.div`
+	overflow-x: auto;
 `;
 
-const Legend = styled.div`
-  max-width: 600px;
-  margin: 20px auto;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  font-family: Mulish, sans-serif;
-  font-size: 14px;
-  color: ${theme.colors.darkGreen};
-`;
-
-const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
+const Table = styled.table`
+	width: 100%;
+	border-collapse: collapse;
+	text-align: center;
+	font-family: Mulish, sans-serif;
+	th,
+	td {
+		padding: 8px;
+		border: 1px solid #ccc;
+	}
+	th {
+		color: ${theme.colors.darkGreen};
+		background-color: ${theme.colors.lightText};
+	}
 `;
 
 const ColorBox = styled.div`
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  background-color: ${(props) => props.color};
-  border: 1px solid #999;
+	width: 18px;
+	height: 18px;
+	border-radius: 4px;
+	background-color: ${(props) => props.color};
+	border: 1px solid #999;
 `;
 
-const StyledCalendar = styled(Calendar)`
-  margin: 0 auto; /* centra horizontalmente */
-  font-family: Mulish, sans-serif;
-
-  .react-calendar__tile {
-    padding: 12px 8px;
-    font-size: 14px;
-  }
-
-  .react-calendar__navigation {
-    margin-bottom: 10px;
-  }
+const Legend = styled.div`
+	margin-top: 16px;
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	font-family: Mulish, sans-serif;
+	font-size: 14px;
+	color: ${theme.colors.darkGreen};
 `;
 
-export default function DoctorAgenda() {
-  const [appointments, setAppointments] = useState([
-    '2025-05-20',
-    '2025-05-22',
-    '2025-05-23',
-  ]);
-  const [blockedDays, setBlockedDays] = useState(['2025-05-21']);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const holidays = ['2025-05-25', '2025-07-09'];
+const LegendItem = styled.div`
+	display: flex;
+	align-items: center;
+	gap: 6px;
+`;
 
-  function formatDate(date) {
-    return date.toISOString().split('T')[0];
-  }
+const Navigation = styled.div`
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	margin-bottom: 20px;
 
-  function onDayClick(date) {
-    const day = formatDate(date);
-    setSelectedDate(day);
-  }
+	button {
+		background-color: ${theme.colors.darkGreen};
+		color: white;
+		border: none;
+		padding: 8px 16px;
+		border-radius: 4px;
+		cursor: pointer;
+		font-family: Mulish, sans-serif;
 
-  function toggleBlock() {
-    if (!selectedDate) return;
-    if (blockedDays.includes(selectedDate)) {
-      setBlockedDays(blockedDays.filter((d) => d !== selectedDate));
-    } else {
-      setBlockedDays([...blockedDays, selectedDate]);
-    }
-  }
+		&:hover {
+			background-color: ${theme.colors.green};
+		}
+	}
+`;
 
-  function tileClassName({ date, view }) {
-    if (view !== 'month') return '';
-    const day = formatDate(date);
-    if (blockedDays.includes(day)) return 'blocked';
-    if (appointments.includes(day)) return 'taken';
-    return '';
-  }
+const ActionButtonsContainer = styled.div`
+	display: flex;
+	justify-content: flex-end;
+`;
 
-  function tileDisabled({ date, view }) {
-  if (view !== 'month') return false;
-  const day = date.getDay();
-  const dateStr = date.toISOString().split('T')[0];
+const ActionButtons = styled.div`
+	display: flex;
+	gap: 20px;
+	margin: 20px 0;
 
-  if (day === 0 || day === 6) return true;
+	button {
+		background-color: ${theme.colors.green};
+		color: ${theme.colors.yellow};
+		border: none;
+		padding: 10px 20px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-family: Mulish, sans-serif;
+		font-weight: 600;
+		transition: background-color 0.3s ease;
 
-  if (holidays.includes(dateStr)) return true;
+		&:hover {
+			background-color: ${theme.colors.darkGreen};
+		}
+	}
+`;
 
-  return false;
+const hours = Array.from({ length: 13 }, (_, i) => `${7 + i}:00`);
+
+function getStartOfWeek(date) {
+	const day = date.getDay();
+	const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+	return new Date(date.setDate(diff));
 }
 
-  return (
+function getWeekDays(startDate) {
+	const days = [];
+	for (let i = 0; i < 5; i++) {
+		const day = new Date(startDate);
+		day.setDate(startDate.getDate() + i);
+		days.push(day);
+	}
+	return days;
+}
+
+function formatDate(date) {
+	return date.toISOString().split('T')[0];
+}
+
+export default function DoctorAgenda() {
+	const [startOfWeek, setStartOfWeek] = useState(getStartOfWeek(new Date()));
+	const [availabilityByDay, setAvailabilityByDay] = useState({
+		slots: {},
+		exceptionDates: [],
+	});
+	const router = useRouter();
+	const { token } = useAuth();
+
+	useEffect(
+		() => {
+			async function loadAvailability() {
+				try {
+					const from = formatDate(startOfWeek);
+					const to = formatDate(
+						new Date(startOfWeek.getTime() + 4 * 86400000)
+					);
+					const token = localStorage.getItem('token');
+
+					const data = await fetchDoctorAgenda(8, from, to, token);
+
+					const slots = mapAvailabilityToSlots(data.availabilities);
+					const exceptionDates = data.exceptions.map(
+						(e) => e.exception_date
+					);
+					setAvailabilityByDay({ slots, exceptionDates });
+				} catch (error) {
+					console.error('Error fetching availability:', error);
+				}
+			}
+
+			if (token) {
+				loadAvailability();
+			}
+		},
+		[startOfWeek],
+		token
+	);
+
+	function mapAvailabilityToSlots(data) {
+		const availabilityMap = {};
+
+		data.forEach(({ weekday, start_time, end_time }) => {
+			const startHour = parseInt(start_time.split(':')[0], 10);
+			const endHour = parseInt(end_time.split(':')[0], 10);
+
+			if (!availabilityMap[weekday]) availabilityMap[weekday] = [];
+
+			for (let hour = startHour; hour < endHour; hour++) {
+				availabilityMap[weekday].push(`${hour}:00`);
+			}
+		});
+
+		return availabilityMap;
+	}
+
+	const weekDays = getWeekDays(startOfWeek);
+
+	const handleLoadAvailability = () => {
+		router.push('#');
+	};
+
+	const handleLoadUnavailability = () => {
+		router.push('#');
+	};
+
+	return (
 		<PageLayout
 			showImage={true}
 			imageUrl="/icono_calendario.svg"
-			title="Gestión de Agenda"
+			title="Gestión de Agenda Semanal"
 			showClock={true}
 		>
-      <Container>
-        <StyledCalendar onClickDay={onDayClick} tileClassName={tileClassName} tileDisabled={tileDisabled} />
-        {selectedDate && (
-          <InfoBox>
-            <p>Seleccionaste: {selectedDate}</p>
-            {blockedDays.includes(selectedDate) ? (
-              <button onClick={toggleBlock}>Desbloquear día</button>
-            ) : (
-              <button onClick={toggleBlock}>Bloquear día</button>
-            )}
-          </InfoBox>
-        )}
+			<Container>
+				<Navigation>
+					<button
+						onClick={() =>
+							setStartOfWeek(
+								new Date(startOfWeek.getTime() - 7 * 86400000)
+							)
+						}
+					>
+						← Semana anterior
+					</button>
+					<button
+						onClick={() =>
+							setStartOfWeek(
+								new Date(startOfWeek.getTime() + 7 * 86400000)
+							)
+						}
+					>
+						Semana siguiente →
+					</button>
+				</Navigation>
 
-        <Legend>
-          <LegendItem>
-            <ColorBox color="#a5d6a7" />
-            <span>Día con turnos tomados</span>
-          </LegendItem>
-          <LegendItem>
-            <ColorBox color="#ef9a9a" />
-            <span>Día bloqueado</span>
-          </LegendItem>
-          <LegendItem>
-            <ColorBox color="transparent" />
-            <span>Día no disponible</span>
-          </LegendItem>
-        </Legend>
-      </Container>
+				<WeekView>
+					<Table>
+						<thead>
+							<tr>
+								<th>Hora</th>
+								{weekDays.map((date) => {
+									const dayName = date.toLocaleDateString('es-AR', {
+										weekday: 'long',
+									});
+									const dayNum = date.toLocaleDateString('es-AR', {
+										day: '2-digit',
+										month: 'short',
+									});
+									return (
+										<th key={date.toISOString()}>
+											{`${
+												dayName.charAt(0).toUpperCase() +
+												dayName.slice(1)
+											} ${dayNum}`}
+										</th>
+									);
+								})}
+							</tr>
+						</thead>
+						<tbody>
+							{hours.map((hour) => (
+								<tr key={hour}>
+									<td>{hour}</td>
+									{weekDays.map((date) => {
+										const weekday = date
+											.toLocaleDateString('en-US', {
+												weekday: 'long',
+											})
+											.toLowerCase();
+										const dateStr = formatDate(date);
 
-      <style jsx global>{`
-        .react-calendar__tile.taken {
-          background: #a5d6a7 !important;
-          color: black !important;
-        }
-        .react-calendar__tile.blocked {
-          background: #ef9a9a !important;
-          color: black !important;
-        }
-      `}</style>
-    </PageLayout>
-  );
+										const isException =
+											availabilityByDay.exceptionDates?.includes(
+												dateStr
+											);
+										const isAvailable =
+											availabilityByDay.slots?.[weekday]?.includes(
+												hour
+											);
+
+										let bgColor = 'transparent';
+										if (isAvailable) bgColor = '#a5d6a7';
+										if (isException) bgColor = '#ef9a9a';
+
+										return (
+											<td
+												key={`${weekday}-${hour}`}
+												style={{
+													backgroundColor: bgColor,
+													height: '40px',
+												}}
+											></td>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</Table>
+				</WeekView>
+
+				<Legend>
+					<LegendItem>
+						<ColorBox color="#a5d6a7" />
+						<span>Disponible</span>
+					</LegendItem>
+					<LegendItem>
+						<ColorBox color="#ef9a9a" />
+						<span>Indisponible (vacaciones, licencia, etc.)</span>
+					</LegendItem>
+					<LegendItem>
+						<ColorBox color="transparent" />
+						<span>No disponible</span>
+					</LegendItem>
+				</Legend>
+			</Container>
+			<ActionButtonsContainer>
+				<ActionButtons>
+					<button onClick={handleLoadAvailability}>
+						Cargar disponibilidad
+					</button>
+					<button onClick={handleLoadUnavailability}>
+						Cargar no disponibilidad
+					</button>
+				</ActionButtons>
+			</ActionButtonsContainer>
+		</PageLayout>
+	);
 }
