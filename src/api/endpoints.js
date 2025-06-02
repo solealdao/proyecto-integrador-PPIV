@@ -10,4 +10,16 @@ export const ENDPOINTS = {
 		EDIT: (id) => `${BASE_URL}/users/${id}`,
 		DELETE: (id) => `${BASE_URL}/users/${id}`,
 	},
+	AVAILABILITY: {
+		GET_ALL: `${BASE_URL}/availability`,
+		GET_BY_DOCTOR: (doctorId) =>
+			`${BASE_URL}/availability/doctor/${doctorId}`,
+		GET_DOCTOR_AGENDA: (doctorId, from, to) =>
+			`${BASE_URL}/availability/doctor/${doctorId}/agenda?from=${from}&to=${to}`,
+		CREATE: `${BASE_URL}/availability`,
+		UPDATE: (id) => `${BASE_URL}/availability/${id}`,
+		DELETE: (id) => `${BASE_URL}/availability/${id}`,
+		CREATE_UNAVAILABLE: `${BASE_URL}/availability/unavailable`,
+		DELETE_UNAVAILABLE: (id) => `${BASE_URL}/availability/unavailable/${id}`,
+	},
 };
