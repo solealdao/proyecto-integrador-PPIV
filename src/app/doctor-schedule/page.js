@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import PageLayout from '@/components/PageLayout';
 import theme from '@/app/theme';
@@ -31,6 +31,15 @@ const Table = styled.table`
 		color: ${theme.colors.darkGreen};
 		background-color: ${theme.colors.lightText};
 	}
+`;
+
+const Cell = styled.td`
+	background-color: ${(props) =>
+		props.unavailable
+			? '#f8d7da'
+			: props.available
+			? '#d4edda'
+			: 'transparent'};
 `;
 
 const ColorBox = styled.div`
@@ -110,17 +119,7 @@ const hours = Array.from({ length: 13 }, (_, i) => `${7 + i}:00`);
 function getStartOfWeek(date) {
 	const day = date.getDay();
 	const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-	return new Date(date.setDate(diff));
-}
-
-function getWeekDays(startDate) {
-	const days = [];
-	for (let i = 0; i < 5; i++) {
-		const day = new Date(startDate);
-		day.setDate(startDate.getDate() + i);
-		days.push(day);
-	}
-	return days;
+	return new Date(date.getFullYear(), date.getMonth(), diff);
 }
 
 function formatDate(date) {
@@ -128,62 +127,58 @@ function formatDate(date) {
 }
 
 export default function DoctorAgenda() {
-	const [startOfWeek, setStartOfWeek] = useState(getStartOfWeek(new Date()));
-	const [availabilityByDay, setAvailabilityByDay] = useState({
-		slots: {},
-		exceptionDates: [],
-	});
+	const [weekStart, setWeekStart] = useState(null);
+	const [hydrated, setHydrated] = useState(false);
+	const [slots, setSlots] = useState([]);
+	const [unavailabilities, setUnavailabilities] = useState([]);
 	const router = useRouter();
-	const { token } = useAuth();
+	const { token, user } = useAuth();
 
-	useEffect(
-		() => {
-			async function loadAvailability() {
-				try {
-					const from = formatDate(startOfWeek);
-					const to = formatDate(
-						new Date(startOfWeek.getTime() + 4 * 86400000)
-					);
-					const token = localStorage.getItem('token');
+	useEffect(() => {
+		setWeekStart(getStartOfWeek(new Date()));
+		setHydrated(true);
+	}, []);
 
-					const data = await fetchDoctorAgenda(8, from, to, token);
+	useEffect(() => {
+		if (!user || !token) {
+			return;
+		}
 
-					const slots = mapAvailabilityToSlots(data.availabilities);
-					const exceptionDates = data.exceptions.map(
-						(e) => e.exception_date
-					);
-					setAvailabilityByDay({ slots, exceptionDates });
-				} catch (error) {
-					console.error('Error fetching availability:', error);
-				}
+		const fetchData = async () => {
+			try {
+				const doctorId = user.id_user;
+				const from = formatDate(weekStart);
+				const to = formatDate(new Date(weekStart.getTime() + 4 * 86400000));
+
+				const data = await fetchDoctorAgenda(doctorId, from, to, token);
+				setSlots(data.slots || []);
+				setUnavailabilities(data.unavailabilities || []);
+			} catch (error) {
+				console.error('Error al obtener la agenda del doctor:', error);
 			}
+		};
 
-			if (token) {
-				loadAvailability();
-			}
-		},
-		[startOfWeek],
-		token
-	);
+		fetchData();
+	}, [user, token, weekStart]);
 
-	function mapAvailabilityToSlots(data) {
-		const availabilityMap = {};
-
-		data.forEach(({ weekday, start_time, end_time }) => {
-			const startHour = parseInt(start_time.split(':')[0], 10);
-			const endHour = parseInt(end_time.split(':')[0], 10);
-
-			if (!availabilityMap[weekday]) availabilityMap[weekday] = [];
-
-			for (let hour = startHour; hour < endHour; hour++) {
-				availabilityMap[weekday].push(`${hour}:00`);
-			}
+	const daysOfWeek = useMemo(() => {
+		if (!weekStart) return [];
+		return Array.from({ length: 7 }, (_, i) => {
+			const date = new Date(weekStart);
+			date.setDate(date.getDate() + i);
+			return date;
 		});
+	}, [weekStart]);
 
-		return availabilityMap;
-	}
+	const groupedSlots = slots.reduce((acc, slot) => {
+		if (!acc[slot.date]) acc[slot.date] = [];
+		acc[slot.date].push(slot);
+		return acc;
+	}, {});
 
-	const weekDays = getWeekDays(startOfWeek);
+	const unavailableDates = new Set(
+		unavailabilities.map((u) => u.exception_date)
+	);
 
 	const handleLoadAvailability = () => {
 		router.push('#');
@@ -192,6 +187,8 @@ export default function DoctorAgenda() {
 	const handleLoadUnavailability = () => {
 		router.push('#');
 	};
+
+	if (!hydrated) return null;
 
 	return (
 		<PageLayout
@@ -204,18 +201,14 @@ export default function DoctorAgenda() {
 				<Navigation>
 					<button
 						onClick={() =>
-							setStartOfWeek(
-								new Date(startOfWeek.getTime() - 7 * 86400000)
-							)
+							setWeekStart(new Date(weekStart.getTime() - 7 * 86400000))
 						}
 					>
 						← Semana anterior
 					</button>
 					<button
 						onClick={() =>
-							setStartOfWeek(
-								new Date(startOfWeek.getTime() + 7 * 86400000)
-							)
+							setWeekStart(new Date(weekStart.getTime() + 7 * 86400000))
 						}
 					>
 						Semana siguiente →
@@ -227,58 +220,38 @@ export default function DoctorAgenda() {
 						<thead>
 							<tr>
 								<th>Hora</th>
-								{weekDays.map((date) => {
-									const dayName = date.toLocaleDateString('es-AR', {
-										weekday: 'long',
-									});
-									const dayNum = date.toLocaleDateString('es-AR', {
-										day: '2-digit',
-										month: 'short',
-									});
-									return (
-										<th key={date.toISOString()}>
-											{`${
-												dayName.charAt(0).toUpperCase() +
-												dayName.slice(1)
-											} ${dayNum}`}
-										</th>
-									);
-								})}
+								{daysOfWeek.map((day) => (
+									<th key={day.toDateString()}>
+										{day.toLocaleDateString('es-AR', {
+											weekday: 'short',
+											day: '2-digit',
+											month: '2-digit',
+										})}
+									</th>
+								))}
 							</tr>
 						</thead>
 						<tbody>
 							{hours.map((hour) => (
 								<tr key={hour}>
 									<td>{hour}</td>
-									{weekDays.map((date) => {
-										const weekday = date
-											.toLocaleDateString('en-US', {
-												weekday: 'long',
-											})
-											.toLowerCase();
-										const dateStr = formatDate(date);
-
-										const isException =
-											availabilityByDay.exceptionDates?.includes(
-												dateStr
-											);
-										const isAvailable =
-											availabilityByDay.slots?.[weekday]?.includes(
-												hour
-											);
-
-										let bgColor = 'transparent';
-										if (isAvailable) bgColor = '#a5d6a7';
-										if (isException) bgColor = '#ef9a9a';
+									{daysOfWeek.map((day) => {
+										const dateStr = formatDate(day);
+										const isUnavailable =
+											unavailableDates.has(dateStr);
+										const isAvailable = groupedSlots[dateStr]?.some(
+											(slot) =>
+												slot.start_time.startsWith(
+													hour.padStart(2, '0')
+												)
+										);
 
 										return (
-											<td
-												key={`${weekday}-${hour}`}
-												style={{
-													backgroundColor: bgColor,
-													height: '40px',
-												}}
-											></td>
+											<Cell
+												key={dateStr + hour}
+												available={isAvailable}
+												unavailable={isUnavailable}
+											/>
 										);
 									})}
 								</tr>
