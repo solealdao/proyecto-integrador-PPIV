@@ -1,6 +1,10 @@
 import { ENDPOINTS } from '../endpoints';
 import { requester } from '../requester';
 
+export const getAllAppointments = async (token) => {
+	return requester.get(ENDPOINTS.APPOINTMENTS.GET_ALL, token);
+};
+
 export const createAppointment = async (appointmentData, token) => {
 	return requester.post(ENDPOINTS.APPOINTMENTS.CREATE, appointmentData, token);
 };

@@ -3,6 +3,8 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useDoctors from '@/hooks/useDoctors';
@@ -62,13 +64,13 @@ export default function NewAppointment() {
 		if (doctor) {
 			setShowCalendar(true);
 		} else {
-			alert('Por favor, seleccione un médico');
+			toast.warn('Por favor, seleccione un médico');
 		}
 	};
 
 	const handleCreateAppointment = async (date, time) => {
 		if (!date || !time) {
-			alert('Fecha y hora son obligatorias');
+			toast.error('Fecha y hora son obligatorias');
 			return;
 		}
 		try {
@@ -81,11 +83,13 @@ export default function NewAppointment() {
 
 			await createAppointment(appointmentData, token);
 
-			alert('Turno reservado con éxito');
-			router.push('/appointment-management');
+			toast.success('Turno reservado con éxito');
+			setTimeout(() => router.push('/patient-appointment-management'), 2000);
 		} catch (error) {
 			console.error(error);
-			alert('Error al reservar turno');
+			const message =
+				error?.response?.data?.message || 'Error al reservar turno';
+			toast.error(message);
 		}
 	};
 
@@ -118,6 +122,14 @@ export default function NewAppointment() {
 					onConfirm={(date, time) => handleCreateAppointment(date, time)}
 				/>
 			)}
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+				hideProgressBar={false}
+				closeOnClick
+				pauseOnHover
+				draggable
+			/>
 		</PageLayout>
 	);
 }

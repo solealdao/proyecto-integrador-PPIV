@@ -23,6 +23,7 @@ export const ENDPOINTS = {
 		DELETE_UNAVAILABLE: (id) => `${BASE_URL}/availability/unavailable/${id}`,
 	},
 	APPOINTMENTS: {
+		GET_ALL: `${BASE_URL}/appointments/all`,
 		CREATE: `${BASE_URL}/appointments`,
 		UPDATE: (id) => `${BASE_URL}/appointments/${id}`,
 		DELETE: (id) => `${BASE_URL}/appointments/${id}`,
