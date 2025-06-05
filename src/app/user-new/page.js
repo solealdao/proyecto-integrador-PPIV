@@ -1,132 +1,190 @@
-"use client";
+'use client';
 
-import PageLayout from "@/components/PageLayout";
-import styled from "@emotion/styled";
-import theme from "@/app/theme";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import PageLayout from '@/components/PageLayout';
+import styled from '@emotion/styled';
+import theme from '@/app/theme';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { registerUser } from '@/api/services/userService';
+import ActionButton from '@/components/ActionButton';
 
 const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 40px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	margin-top: 40px;
 `;
 const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 `;
 
 const Label = styled.label`
-  font-size: 16px;
-  font-weight: 600;
+	font-size: 16px;
+	font-weight: 600;
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+	background-color: ${theme.colors.lightText};
+	color: ${theme.colors.darkGreen};
+	padding: 10px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	font-size: 16px;
 `;
 
 const ButtonContainer = styled.div`
-  margin-top: 30px;
-  display: flex;
-  justify-content: space-between;
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
 `;
 
-const ActionButton = styled.button`
-  background-color: ${theme.colors.darkGreen};
-  color: ${theme.colors.yellow};
-  padding: 12px 30px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: Mulish, sans-serif;
-`;
 const Select = styled.select`
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  width: 250px;
-  margin-top: 8px;
-  font-family: Mulish, sans-serif;
+	padding: 10px;
+	font-size: 16px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	width: 250px;
+	margin-top: 8px;
+	font-family: Mulish, sans-serif;
 `;
-
 
 export default function UserNew() {
-  const router = useRouter();
+	const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [userType, setUserType] = useState("");
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [userType, setUserType] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-    // Simulación: podrías hacer POST a una API real acá
-    console.log("Usuario nuevo:", { name, email });
+		const userData = {
+			first_name: firstName,
+			last_name: lastName,
+			email,
+			password,
+			id_user_type: mapUserTypeToId(userType),
+		};
 
-    // Redirige a gestión de usuarios
-    router.push("/user-management");
-  };
+		try {
+			await registerUser(userData);
+			toast.success('Usuario registrado correctamente!');
+			setTimeout(() => {
+				router.push('/user-management');
+			}, 1500);
+		} catch (err) {
+			console.error('Error al registrar usuario:', err);
+			toast.error('Ocurrió un error al registrar el usuario.');
+		}
+	};
 
-  return (
-    <PageLayout
-      showImage={true}
-      imageUrl="/user.svg"
-      title="Nuevo Usuario"
-      showClock={true}
-    >
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Label>Nombre completo</Label>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </FormGroup>
+	const mapUserTypeToId = (type) => {
+		switch (type) {
+			case 'paciente':
+				return 1;
+			case 'doctor':
+				return 2;
+			case 'admin':
+				return 3;
+			default:
+				return null;
+		}
+	};
 
-        <FormGroup>
-          <Label>Email</Label>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </FormGroup>
-        <FormGroup>
-          <Label>Tipo de usuario</Label>
-          <Select
-            value={userType}
-            onChange={(e) => setUserType(e.target.value)}
-            required
-          >
-            <option value="" disabled>
-              Seleccionar tipo
-            </option>
-            <option value="doctor">Doctor</option>
-            <option value="paciente">Paciente</option>
-            <option value="admin">Administrador</option>
-          </Select>
-        </FormGroup>
+	return (
+		<PageLayout
+			showImage={true}
+			imageUrl="/user.svg"
+			title="Nuevo Usuario"
+			showClock={true}
+		>
+			<Form onSubmit={handleSubmit}>
+				<FormGroup>
+					<Label>Nombre</Label>
+					<Input
+						type="text"
+						value={firstName}
+						placeholder="Ej. Juan"
+						onChange={(e) => setFirstName(e.target.value)}
+						required
+					/>
+				</FormGroup>
 
-        <ButtonContainer>
-          <ActionButton
-            type="button"
-            onClick={() => router.push("/user-management")}
-          >
-            Cancelar
-          </ActionButton>
-          <ActionButton type="submit">Guardar</ActionButton>
-        </ButtonContainer>
-      </Form>
-    </PageLayout>
-  );
+				<FormGroup>
+					<Label>Apellido</Label>
+					<Input
+						type="text"
+						value={lastName}
+						placeholder="Ej. Pérez"
+						onChange={(e) => setLastName(e.target.value)}
+						required
+					/>
+				</FormGroup>
+
+				<FormGroup>
+					<Label>Email</Label>
+					<Input
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						required
+					/>
+				</FormGroup>
+
+				<FormGroup>
+					<Label>Contraseña</Label>
+					<Input
+						type="password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+					/>
+				</FormGroup>
+
+				<FormGroup>
+					<Label>Tipo de usuario</Label>
+					<Select
+						value={userType}
+						onChange={(e) => setUserType(e.target.value)}
+						required
+					>
+						<option value="" disabled>
+							Seleccionar tipo
+						</option>
+						<option value="doctor">Doctor</option>
+						<option value="paciente">Paciente</option>
+						<option value="admin">Administrador</option>
+					</Select>
+				</FormGroup>
+
+				<ButtonContainer>
+					<ActionButton
+						type="button"
+						onClick={() => router.push('/user-management')}
+					>
+						Cancelar
+					</ActionButton>
+					<ActionButton type="submit">Guardar</ActionButton>
+				</ButtonContainer>
+			</Form>
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+				theme="colored"
+			/>
+		</PageLayout>
+	);
 }

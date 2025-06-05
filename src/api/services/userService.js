@@ -9,8 +9,12 @@ export const fetchAllUsers = async (token) => {
 	return requester.get(ENDPOINTS.USERS.GET_ALL, token);
 };
 
-export const registerUser = async (userData, token) => {
-	return requester.post(ENDPOINTS.USERS.REGISTER, userData, token);
+export const fetchUserById = async (id, token) => {
+	return requester.get(ENDPOINTS.USERS.GET_BY_ID(id), token);
+};
+
+export const registerUser = async (userData) => {
+	return requester.post(ENDPOINTS.USERS.REGISTER, userData);
 };
 
 export const updateUser = async (id, userData, token) => {

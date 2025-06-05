@@ -1,157 +1,275 @@
 'use client';
 
-import { useState } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import PageLayout from '@/components/PageLayout';
 import theme from '@/app/theme';
+import { useRouter } from 'next/navigation';
+import { fetchDoctorAgenda } from '@/api/services/availabilityService';
+import useAuth from '@/hooks/useAuth';
+import ActionButton from '@/components/ActionButton';
 
 const Container = styled.div`
-  max-width: 600px;
-  margin: 20px auto;
+	max-width: 900px;
+	margin: 20px auto;
 `;
 
-const InfoBox = styled.div`
-  margin-top: 20px;
-  padding: 16px;
-  background-color: #eee;
-  border-radius: 8px;
+const WeekView = styled.div`
+	overflow-x: auto;
 `;
 
-const Legend = styled.div`
-  max-width: 600px;
-  margin: 20px auto;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  font-family: Mulish, sans-serif;
-  font-size: 14px;
-  color: ${theme.colors.darkGreen};
+const Table = styled.table`
+	width: 100%;
+	border-collapse: collapse;
+	text-align: center;
+	font-family: Mulish, sans-serif;
+	th,
+	td {
+		padding: 8px;
+		border: 1px solid #ccc;
+	}
+	th {
+		color: ${theme.colors.darkGreen};
+		background-color: ${theme.colors.lightText};
+	}
 `;
 
-const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
+const Cell = styled.td`
+	background-color: ${(props) =>
+		props.unavailable
+			? '#f8d7da'
+			: props.booked
+			? '#b39ddb'
+			: props.available
+			? '#a5d6a7'
+			: 'transparent'};
 `;
 
 const ColorBox = styled.div`
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  background-color: ${(props) => props.color};
-  border: 1px solid #999;
+	width: 18px;
+	height: 18px;
+	border-radius: 4px;
+	background-color: ${(props) => props.color};
+	border: 1px solid #999;
 `;
 
-const StyledCalendar = styled(Calendar)`
-  margin: 0 auto; /* centra horizontalmente */
-  font-family: Mulish, sans-serif;
-
-  .react-calendar__tile {
-    padding: 12px 8px;
-    font-size: 14px;
-  }
-
-  .react-calendar__navigation {
-    margin-bottom: 10px;
-  }
+const Legend = styled.div`
+	margin-top: 16px;
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	font-family: Mulish, sans-serif;
+	font-size: 14px;
+	color: ${theme.colors.darkGreen};
 `;
 
-export default function DoctorAgenda() {
-  const [appointments, setAppointments] = useState([
-    '2025-05-20',
-    '2025-05-22',
-    '2025-05-23',
-  ]);
-  const [blockedDays, setBlockedDays] = useState(['2025-05-21']);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const holidays = ['2025-05-25', '2025-07-09'];
+const LegendItem = styled.div`
+	display: flex;
+	align-items: center;
+	gap: 6px;
+`;
 
-  function formatDate(date) {
-    return date.toISOString().split('T')[0];
-  }
+const Navigation = styled.div`
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	margin-bottom: 20px;
 
-  function onDayClick(date) {
-    const day = formatDate(date);
-    setSelectedDate(day);
-  }
+	button {
+		background-color: ${theme.colors.darkGreen};
+		color: white;
+		border: none;
+		padding: 8px 16px;
+		border-radius: 4px;
+		cursor: pointer;
+		font-family: Mulish, sans-serif;
 
-  function toggleBlock() {
-    if (!selectedDate) return;
-    if (blockedDays.includes(selectedDate)) {
-      setBlockedDays(blockedDays.filter((d) => d !== selectedDate));
-    } else {
-      setBlockedDays([...blockedDays, selectedDate]);
-    }
-  }
+		&:hover {
+			background-color: ${theme.colors.green};
+		}
+	}
+`;
 
-  function tileClassName({ date, view }) {
-    if (view !== 'month') return '';
-    const day = formatDate(date);
-    if (blockedDays.includes(day)) return 'blocked';
-    if (appointments.includes(day)) return 'taken';
-    return '';
-  }
+const ActionButtonsContainer = styled.div`
+	display: flex;
+	justify-content: flex-end;
+`;
 
-  function tileDisabled({ date, view }) {
-  if (view !== 'month') return false;
-  const day = date.getDay();
-  const dateStr = date.toISOString().split('T')[0];
+const hours = Array.from({ length: 13 }, (_, i) => `${7 + i}:00`);
 
-  if (day === 0 || day === 6) return true;
-
-  if (holidays.includes(dateStr)) return true;
-
-  return false;
+function getStartOfWeek(date) {
+	const day = date.getDay();
+	const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+	return new Date(date.getFullYear(), date.getMonth(), diff);
 }
 
-  return (
+function formatDate(date) {
+	return date.toISOString().split('T')[0];
+}
+
+export default function DoctorAgenda() {
+	const [weekStart, setWeekStart] = useState(null);
+	const [hydrated, setHydrated] = useState(false);
+	const [slots, setSlots] = useState([]);
+	const [unavailabilities, setUnavailabilities] = useState([]);
+	const router = useRouter();
+	const { token, user } = useAuth();
+
+	useEffect(() => {
+		setWeekStart(getStartOfWeek(new Date()));
+		setHydrated(true);
+	}, []);
+
+	useEffect(() => {
+		if (!user || !token) {
+			return;
+		}
+
+		const fetchData = async () => {
+			try {
+				const doctorId = user.id_user;
+				const from = formatDate(weekStart);
+				const to = formatDate(new Date(weekStart.getTime() + 4 * 86400000));
+
+				const data = await fetchDoctorAgenda(doctorId, from, to, token);
+				setSlots(data.slots || []);
+				setUnavailabilities(data.unavailabilities || []);
+			} catch (error) {
+				console.error('Error al obtener la agenda del doctor:', error);
+			}
+		};
+
+		fetchData();
+	}, [user, token, weekStart]);
+
+	const daysOfWeek = useMemo(() => {
+		if (!weekStart) return [];
+		return Array.from({ length: 7 }, (_, i) => {
+			const date = new Date(weekStart);
+			date.setDate(date.getDate() + i);
+			return date;
+		});
+	}, [weekStart]);
+
+	const groupedSlots = slots.reduce((acc, slot) => {
+		if (!acc[slot.date]) acc[slot.date] = [];
+		acc[slot.date].push(slot);
+		return acc;
+	}, {});
+
+	const unavailableDates = new Set(
+		unavailabilities.map((u) => u.exception_date)
+	);
+
+	const handleLoadAvailability = () => {
+		router.push('/doctor-schedule/create-availability');
+	};
+
+	const handleLoadUnavailability = () => {
+		router.push('/doctor-schedule/create-unavailability');
+	};
+
+	if (!hydrated) return null;
+
+	return (
 		<PageLayout
 			showImage={true}
 			imageUrl="/icono_calendario.svg"
-			title="Gestión de Agenda"
+			title="Gestión de Agenda Semanal"
 			showClock={true}
 		>
-      <Container>
-        <StyledCalendar onClickDay={onDayClick} tileClassName={tileClassName} tileDisabled={tileDisabled} />
-        {selectedDate && (
-          <InfoBox>
-            <p>Seleccionaste: {selectedDate}</p>
-            {blockedDays.includes(selectedDate) ? (
-              <button onClick={toggleBlock}>Desbloquear día</button>
-            ) : (
-              <button onClick={toggleBlock}>Bloquear día</button>
-            )}
-          </InfoBox>
-        )}
+			<Container>
+				<Navigation>
+					<button
+						onClick={() =>
+							setWeekStart(new Date(weekStart.getTime() - 7 * 86400000))
+						}
+					>
+						← Semana anterior
+					</button>
+					<button
+						onClick={() =>
+							setWeekStart(new Date(weekStart.getTime() + 7 * 86400000))
+						}
+					>
+						Semana siguiente →
+					</button>
+				</Navigation>
 
-        <Legend>
-          <LegendItem>
-            <ColorBox color="#a5d6a7" />
-            <span>Día con turnos tomados</span>
-          </LegendItem>
-          <LegendItem>
-            <ColorBox color="#ef9a9a" />
-            <span>Día bloqueado</span>
-          </LegendItem>
-          <LegendItem>
-            <ColorBox color="transparent" />
-            <span>Día no disponible</span>
-          </LegendItem>
-        </Legend>
-      </Container>
+				<WeekView>
+					<Table>
+						<thead>
+							<tr>
+								<th>Hora</th>
+								{daysOfWeek.map((day) => (
+									<th key={day.toDateString()}>
+										{day.toLocaleDateString('es-AR', {
+											weekday: 'short',
+											day: '2-digit',
+											month: '2-digit',
+										})}
+									</th>
+								))}
+							</tr>
+						</thead>
+						<tbody>
+							{hours.map((hour) => (
+								<tr key={hour}>
+									<td>{hour}</td>
+									{daysOfWeek.map((day) => {
+										const dateStr = formatDate(day);
+										const isUnavailable =
+											unavailableDates.has(dateStr);
+										const slotForHour = groupedSlots[dateStr]?.find(
+											(slot) =>
+												slot.start_time.startsWith(
+													hour.padStart(2, '0')
+												)
+										);
+										const slotStatus = slotForHour?.status;
 
-      <style jsx global>{`
-        .react-calendar__tile.taken {
-          background: #a5d6a7 !important;
-          color: black !important;
-        }
-        .react-calendar__tile.blocked {
-          background: #ef9a9a !important;
-          color: black !important;
-        }
-      `}</style>
-    </PageLayout>
-  );
+										return (
+											<Cell
+												key={dateStr + hour}
+												available={slotStatus === 'available'}
+												booked={slotStatus === 'booked'}
+												unavailable={isUnavailable}
+											/>
+										);
+									})}
+								</tr>
+							))}
+						</tbody>
+					</Table>
+				</WeekView>
+
+				<Legend>
+					<LegendItem>
+						<ColorBox color="#a5d6a7" />
+						<span>Disponible</span>
+					</LegendItem>
+					<LegendItem>
+						<ColorBox color="#b39ddb" />
+						<span>Turno reservado</span>
+					</LegendItem>
+					<LegendItem>
+						<ColorBox color="#ef9a9a" />
+						<span>Indisponible (vacaciones, licencia, etc.)</span>
+					</LegendItem>
+					<LegendItem>
+						<ColorBox color="transparent" />
+						<span>No disponible</span>
+					</LegendItem>
+				</Legend>
+			</Container>
+			<ActionButtonsContainer>
+				<ActionButton onClick={handleLoadAvailability}>
+					Cargar disponibilidad
+				</ActionButton>
+				<ActionButton onClick={handleLoadUnavailability}>
+					Cargar no disponibilidad
+				</ActionButton>
+			</ActionButtonsContainer>
+		</PageLayout>
+	);
 }

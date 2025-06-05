@@ -5,110 +5,153 @@ import styled from '@emotion/styled';
 import theme from '@/app/theme';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-
+import useAuth from '@/hooks/useAuth';
+import { fetchUserById, updateUser } from '@/api/services/userService';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ActionButton from '@/components/ActionButton';
 
 const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  margin-top: 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	margin-top: 40px;
 `;
 
 const Label = styled.label`
-  font-weight: bold;
-  font-size: 16px;
+	font-weight: bold;
+	font-size: 16px;
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  width: 300px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+	background-color: ${theme.colors.lightText};
+	color: ${theme.colors.darkGreen};
+	padding: 10px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	font-size: 16px;
 `;
 
 const Select = styled.select`
-  padding: 10px;
-  width: 300px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+	padding: 10px;
+	width: 300px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
 `;
 
 const ButtonContainer = styled.div`
-  margin-top: 30px;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 640px;
+	margin-top: 30px;
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	max-width: 640px;
 `;
-
-const ActionButton = styled.button`
-  background-color: ${theme.colors.darkGreen};
-  color: ${theme.colors.yellow};
-  padding: 12px 30px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: Mulish, sans-serif;
-`;
-
-const mockUsers = [
-  { id: '1', name: 'Florencia García', email: 'flor@example.com', permiso: 'doctor' },
-  { id: '2', name: 'Juan Pérez', email: 'juan@example.com', permiso: 'Admin' },
-];
 
 export default function UserEdit() {
-  const { id } = useParams();
-  const router = useRouter();
-  
+	const { id } = useParams();
+	const router = useRouter();
+	const { token } = useAuth();
 
-  const [formData, setFormData] = useState({ name: '', email: '', permiso: '' });
+	const [formData, setFormData] = useState({
+		first_name: '',
+		last_name: '',
+		email: '',
+		id_user_type: '',
+	});
 
-  useEffect(() => {
-    const user = mockUsers.find((u) => u.id === id);
-    if (user) setFormData(user);
-  }, [id]);
+	useEffect(() => {
+		const loadUser = async () => {
+			try {
+				const user = await fetchUserById(id, token);
+				setFormData({
+					first_name: user.first_name || '',
+					last_name: user.last_name || '',
+					email: user.email || '',
+					id_user_type: user.id_user_type?.toString() || '',
+				});
+			} catch (error) {
+				console.error('Error cargando usuario:', error);
+				toast.error('Error al cargar usuario: ' + error.message);
+			}
+		};
 
+		if (id && token) loadUser();
+	}, [id, token]);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+	const handleChange = (e) =>
+		setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Guardar usuario:', formData);
-    router.push('/user-management');
-  };
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		try {
+			await updateUser(id, formData, token);
+			toast.success('Usuario actualizado correctamente');
+			setTimeout(() => {
+				router.push('/user-management');
+			}, 1500);
+		} catch (error) {
+			toast.error('Error al actualizar usuario: ' + error.message);
+		}
+	};
 
-  const handleCancel = () => {
-    router.push('/user-management');
-  };
+	const handleCancel = () => {
+		router.push('/user-management');
+	};
 
-  return (
-    <PageLayout showImage={true} imageUrl="/user.svg" title="Editar Usuario" showClock={true}>
-      <Form onSubmit={handleSubmit}>
-        <Label>
-          Nombre completo:
-          <Input name="name" value={formData.name} onChange={handleChange} />
-        </Label>
-        <Label>
-          Email:
-          <Input name="email" value={formData.email} onChange={handleChange} />
-        </Label>
-        <Label>
-          Tipo de usuario:
-          <Select name="permiso" value={formData.permiso} onChange={handleChange}>
-            <option value="">Seleccionar</option>
-            <option value="doctor">Doctor</option>
-            <option value="paciente">Paciente</option>
-            <option value="admin">Administrador</option>
-          </Select>
-        </Label>
-        <ButtonContainer>
-          <ActionButton type="button" onClick={handleCancel}>Cancelar</ActionButton>
-          <ActionButton type="submit">Guardar</ActionButton>
-        </ButtonContainer>
-      </Form>
-    </PageLayout>
-  );
+	return (
+		<PageLayout
+			showImage={true}
+			imageUrl="/user.svg"
+			title="Editar Usuario"
+			showClock={true}
+		>
+			<Form onSubmit={handleSubmit}>
+				<Label>
+					Nombre:
+					<Input
+						name="first_name"
+						value={formData.first_name}
+						onChange={handleChange}
+					/>
+				</Label>
+				<Label>
+					Apellido:
+					<Input
+						name="last_name"
+						value={formData.last_name}
+						onChange={handleChange}
+					/>
+				</Label>
+				<Label>
+					Email:
+					<Input
+						name="email"
+						value={formData.email}
+						onChange={handleChange}
+					/>
+				</Label>
+				<Label>
+					Tipo de usuario:
+					<Select
+						name="id_user_type"
+						value={formData.id_user_type}
+						onChange={handleChange}
+					>
+						<option value="">Seleccionar</option>
+						<option value="1">Paciente</option>
+						<option value="2">Doctor</option>
+						<option value="3">Administrador</option>
+					</Select>
+				</Label>
+				<ButtonContainer>
+					<ActionButton type="button" onClick={handleCancel}>
+						Cancelar
+					</ActionButton>
+					<ActionButton type="submit">Guardar</ActionButton>
+				</ButtonContainer>
+			</Form>
+			<ToastContainer position="top-right" autoClose={3000} />
+		</PageLayout>
+	);
 }

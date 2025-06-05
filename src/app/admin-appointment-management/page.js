@@ -3,7 +3,6 @@
 import PageLayout from '@/components/PageLayout';
 import MenuCard from '@/components/MenuCard';
 import styled from '@emotion/styled';
-import LogoutButton from '@/components/LogoutButton';
 
 const ButtonContainer = styled.div`
 	display: flex;
@@ -23,14 +22,8 @@ export default function AppointmentHome() {
 		>
 			<ButtonContainer>
 				<MenuCard text="Nuevo Turno" url="/appointment-new" />
-				<MenuCard text="Consultar Turnos" url="/appointment-query" />
-				<MenuCard text="Modificar Turnos" url="appointment-edit" />
-				<MenuCard text="Historial de Turnos" url="#" />
+				<MenuCard text="Historial de Turnos" url="/appointment-history" />
 			</ButtonContainer>
-
-			<LogoutButton onClick={() => (window.location.href = '/')}>
-				Cerrar Sesión
-			</LogoutButton>
 		</PageLayout>
 	);
 }
