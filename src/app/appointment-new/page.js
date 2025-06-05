@@ -11,6 +11,7 @@ import useDoctors from '@/hooks/useDoctors';
 import useAuth from '@/hooks/useAuth';
 import Calendar from './componentes/Calendar';
 import { createAppointment } from '@/api/services/appointmentService';
+import usePatients from '@/hooks/usePatients';
 
 const FormContainer = styled.div`
 	display: flex;
@@ -54,18 +55,27 @@ const NextButton = styled.button`
 
 export default function NewAppointment() {
 	const [doctor, setDoctor] = useState('');
+	const [selectedPatient, setSelectedPatient] = useState('');
 	const [showCalendar, setShowCalendar] = useState(false);
 	const router = useRouter();
 	const { token, user } = useAuth();
 
 	const { doctors } = useDoctors(token);
+	const { patients } = usePatients(token);
+
+	const isAdmin = user?.id_user_type === 3;
 
 	const handleSubmit = () => {
-		if (doctor) {
-			setShowCalendar(true);
-		} else {
+		if (!doctor) {
 			toast.warn('Por favor, seleccione un médico');
+			return;
 		}
+
+		if (isAdmin && !selectedPatient) {
+			toast.warn('Por favor, seleccione un paciente');
+			return;
+		}
+		setShowCalendar(true);
 	};
 
 	const handleCreateAppointment = async (date, time) => {
@@ -73,12 +83,13 @@ export default function NewAppointment() {
 			toast.error('Fecha y hora son obligatorias');
 			return;
 		}
+		const id_patient = isAdmin ? selectedPatient : user.id_user;
 		try {
 			const appointmentData = {
 				date,
 				time,
 				id_doctor: doctor,
-				id_patient: user.id_user,
+				id_patient,
 			};
 
 			await createAppointment(appointmentData, token);
@@ -114,6 +125,24 @@ export default function NewAppointment() {
 							</option>
 						))}
 					</Select>
+
+					{isAdmin && (
+						<>
+							<Label>Seleccionar paciente:</Label>
+							<Select
+								value={selectedPatient}
+								onChange={(e) => setSelectedPatient(e.target.value)}
+							>
+								<option value="">Seleccione un paciente</option>
+								{patients.map((pat) => (
+									<option key={pat.id_user} value={pat.id_user}>
+										{pat.first_name} {pat.last_name}
+									</option>
+								))}
+							</Select>
+						</>
+					)}
+
 					<NextButton onClick={handleSubmit}>Siguiente</NextButton>
 				</FormContainer>
 			) : (

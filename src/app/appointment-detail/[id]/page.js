@@ -14,11 +14,11 @@ import {
 } from '@/api/services/appointmentService';
 import useAuth from '@/hooks/useAuth';
 import useDoctors from '@/hooks/useDoctors';
-import usePatients from '@/hooks/usePatients';
 import {
 	dateFormatter,
 	timeFormatter,
 } from '../../../../utils/dateTimeFormatter';
+import ActionButton from '@/components/ActionButton';
 
 const FormContainer = styled.div`
 	display: flex;
@@ -60,33 +60,17 @@ const ButtonGroup = styled.div`
 	flex-wrap: wrap;
 `;
 
-const Button = styled.button`
-	padding: 12px 30px;
-	background-color: ${theme.colors.green};
-	color: ${theme.colors.yellow};
-	border-radius: 12px;
-	font-size: 16px;
-	font-weight: bold;
-	font-family: Mulish, sans-serif;
-	border: none;
-	cursor: pointer;
-
-	&:hover {
-		background-color: ${theme.colors.darkGreen};
-	}
-`;
-
 export default function AppointmentDetail() {
-	const { token } = useAuth();
+	const { token, user } = useAuth();
 	const router = useRouter();
 	const params = useParams();
 	const appointmentId = params.id;
 
 	const { doctors, loading: loadingDoctors } = useDoctors(token);
-	const { patients, loading: loadingPatients } = usePatients(token);
 
 	const [doctorId, setDoctorId] = useState('');
 	const [patientId, setPatientId] = useState(null);
+	const [patientData, setPatientData] = useState(null);
 	const [date, setDate] = useState('');
 	const [time, setTime] = useState('');
 	const [availableTimes, setAvailableTimes] = useState([]);
@@ -94,6 +78,7 @@ export default function AppointmentDetail() {
 	const [editable, setEditable] = useState(false);
 	const [patientAssigned, setPatientAssigned] = useState(false);
 	const [doctorAgenda, setDoctorAgenda] = useState({});
+	const [appointmentStatus, setAppointmentStatus] = useState('');
 
 	useEffect(() => {
 		if (appointmentId) {
@@ -108,11 +93,15 @@ export default function AppointmentDetail() {
 			setDate(data.date);
 			setTime(data.time);
 			setDoctorId(String(data.id_doctor));
-			if (data.id_patient) {
+			setAppointmentStatus(data.status);
+
+			if (data.patient) {
+				setPatientData(data.patient);
 				setPatientId(data.id_patient);
 				setPatientAssigned(true);
 				setEditable(false);
 			} else {
+				setPatientData(null);
 				setPatientAssigned(false);
 			}
 		} catch (error) {
@@ -209,10 +198,13 @@ export default function AppointmentDetail() {
 			console.error(error);
 		}
 	};
-	const patient = patients.find((p) => p.id_user === patientId);
-	const patientName = patient
-		? `${patient.first_name ?? ''} ${patient.last_name ?? ''}`.trim()
+
+	const patientName = patientData
+		? `${patientData.first_name ?? ''} ${patientData.last_name ?? ''}`.trim()
 		: '';
+
+	const isCanceled = appointmentStatus === 'canceled';
+	const isDoctor = user?.id_user_type === 2;
 
 	return (
 		<PageLayout
@@ -232,7 +224,7 @@ export default function AppointmentDetail() {
 				<Select
 					value={doctorId}
 					onChange={(e) => handleDoctorChange(e.target.value)}
-					disabled={!editable || loadingDoctors}
+					disabled={!editable || loadingDoctors || isCanceled}
 				>
 					<option value="">Seleccione un/a médico/a</option>
 					{doctors?.map((doc) => (
@@ -260,7 +252,7 @@ export default function AppointmentDetail() {
 							setAvailableTimes([]);
 						}
 					}}
-					disabled={!doctorId || availableDates.length === 0}
+					disabled={!doctorId || availableDates.length === 0 || isCanceled}
 				>
 					<option value="">{dateFormatter(date)}</option>
 					{availableDates.map((fecha) => (
@@ -274,7 +266,12 @@ export default function AppointmentDetail() {
 				<Select
 					value={time}
 					onChange={(e) => setTime(e.target.value)}
-					disabled={!editable || !date || availableTimes.length === 0}
+					disabled={
+						!editable ||
+						!date ||
+						availableTimes.length === 0 ||
+						isCanceled
+					}
 				>
 					<option value="">{timeFormatter(time)}</option>
 					{availableTimes.map((hora, index) => (
@@ -286,9 +283,21 @@ export default function AppointmentDetail() {
 
 				<ButtonGroup>
 					{!editable ? (
-						<Button onClick={() => setEditable(true)}>Modificar</Button>
+						<ActionButton
+							onClick={() => setEditable(true)}
+							disabled={isCanceled || isDoctor}
+						>
+							Modificar
+						</ActionButton>
 					) : (
-						<Button onClick={handleSubmit}>Guardar Cambios</Button>
+						<>
+							<ActionButton onClick={handleSubmit} disabled={isCanceled}>
+								Guardar Cambios
+							</ActionButton>
+							<ActionButton onClick={() => setEditable(false)}>
+								Cancelar
+							</ActionButton>
+						</>
 					)}
 				</ButtonGroup>
 			</FormContainer>

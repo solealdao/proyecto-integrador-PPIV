@@ -7,6 +7,9 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import { fetchUserById, updateUser } from '@/api/services/userService';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ActionButton from '@/components/ActionButton';
 
 const Form = styled.form`
 	display: flex;
@@ -45,22 +48,6 @@ const ButtonContainer = styled.div`
 	max-width: 640px;
 `;
 
-const ActionButton = styled.button`
-	background-color: ${theme.colors.green};
-	color: ${theme.colors.yellow};
-	border: none;
-	padding: 10px 20px;
-	border-radius: 6px;
-	cursor: pointer;
-	font-family: Mulish, sans-serif;
-	font-weight: 600;
-	transition: background-color 0.3s ease;
-
-	&:hover {
-		background-color: ${theme.colors.darkGreen};
-	}
-`;
-
 export default function UserEdit() {
 	const { id } = useParams();
 	const router = useRouter();
@@ -85,7 +72,7 @@ export default function UserEdit() {
 				});
 			} catch (error) {
 				console.error('Error cargando usuario:', error);
-				alert('Error al cargar usuario: ' + error.message);
+				toast.error('Error al cargar usuario: ' + error.message);
 			}
 		};
 
@@ -99,10 +86,12 @@ export default function UserEdit() {
 		e.preventDefault();
 		try {
 			await updateUser(id, formData, token);
-			alert('Usuario actualizado correctamente');
-			router.push('/user-management');
+			toast.success('Usuario actualizado correctamente');
+			setTimeout(() => {
+				router.push('/user-management');
+			}, 1500);
 		} catch (error) {
-			alert('Error al actualizar usuario: ' + error.message);
+			toast.error('Error al actualizar usuario: ' + error.message);
 		}
 	};
 
@@ -162,6 +151,7 @@ export default function UserEdit() {
 					<ActionButton type="submit">Guardar</ActionButton>
 				</ButtonContainer>
 			</Form>
+			<ToastContainer position="top-right" autoClose={3000} />
 		</PageLayout>
 	);
 }

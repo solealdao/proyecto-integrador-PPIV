@@ -9,6 +9,7 @@ import useDoctors from '@/hooks/useDoctors';
 import usePatients from '@/hooks/usePatients';
 import { useEffect, useState } from 'react';
 import { dateFormatter, timeFormatter } from '../../../utils/dateTimeFormatter';
+import ActionButton from '@/components/ActionButton';
 
 const Container = styled.div`
 	max-width: 600px;
@@ -47,23 +48,6 @@ const ButtonContainer = styled.div`
 	margin: 4em;
 	display: flex;
 	justify-content: center;
-`;
-
-const ActionButton = styled.button`
-	background-color: ${theme.colors.green};
-	color: ${theme.colors.yellow};
-	border: none;
-	padding: 10px 20px;
-	border-radius: 6px;
-	cursor: pointer;
-	font-family: Mulish, sans-serif;
-	font-weight: 600;
-	transition: background-color 0.3s ease;
-	margin: 0em 2em;
-
-	&:hover {
-		background-color: ${theme.colors.darkGreen};
-	}
 `;
 
 export default function AppointmentReceipt() {

@@ -4,7 +4,7 @@ import {
 	dateFormatter,
 	timeFormatter,
 } from '../../../../utils/dateTimeFormatter';
-import { Eye } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const columnWidths = [
@@ -88,7 +88,30 @@ const ViewButton = styled.button`
 	}
 `;
 
-export default function HistoryTable({ appointments = [] }) {
+const DeleteButton = styled.button`
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: red;
+	font-size: 18px;
+	padding: 6px;
+
+	&:hover {
+		color: darkred;
+	}
+	&:disabled {
+		color: grey;
+		cursor: not-allowed;
+		opacity: 0.5;
+		pointer-events: none;
+	}
+`;
+
+export default function HistoryTable({
+	appointments = [],
+	onDelete,
+	isDoctor = false,
+}) {
 	const router = useRouter();
 
 	if (!appointments.length) {
@@ -135,6 +158,15 @@ export default function HistoryTable({ appointments = [] }) {
 							>
 								<Eye />
 							</ViewButton>
+							{!isDoctor && (
+								<DeleteButton
+									aria-label={`Cancelar turno ${appt.id_appointment}`}
+									onClick={() => onDelete?.(appt.id_appointment)}
+									disabled={appt.status.toLowerCase() === 'canceled'}
+								>
+									<Trash2 />
+								</DeleteButton>
+							)}
 						</Td>
 					</Tr>
 				))}

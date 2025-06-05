@@ -28,7 +28,7 @@ export default function DoctorHome() {
 		>
 			<ButtonContainer>
 				<MenuCard text="Consultar agenda" url="/doctor-schedule" />
-				<MenuCard text="Ver historial" url="#" />
+				<MenuCard text="Ver historial" url="/appointment-history" />
 				<MenuCard text="Ir a mensajería" url="#" />
 			</ButtonContainer>
 		</PageLayout>

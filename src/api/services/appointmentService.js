@@ -25,8 +25,8 @@ export const getMyAppointments = async (token) => {
 	return requester.get(ENDPOINTS.APPOINTMENTS.GET_MY_APPOINTMENTS, token);
 };
 
-export const getAppointmentsByUser = async (userId, token) => {
-	return requester.get(ENDPOINTS.APPOINTMENTS.GET_BY_USER(userId), token);
+export const getAppointmentsByDoctor = async (doctorId, token) => {
+	return requester.get(ENDPOINTS.APPOINTMENTS.GET_BY_DOCTOR(doctorId), token);
 };
 
 export const getAppointmentById = async (id, token) => {

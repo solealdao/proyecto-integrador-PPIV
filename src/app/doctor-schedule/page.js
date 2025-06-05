@@ -7,6 +7,7 @@ import theme from '@/app/theme';
 import { useRouter } from 'next/navigation';
 import { fetchDoctorAgenda } from '@/api/services/availabilityService';
 import useAuth from '@/hooks/useAuth';
+import ActionButton from '@/components/ActionButton';
 
 const Container = styled.div`
 	max-width: 900px;
@@ -37,8 +38,10 @@ const Cell = styled.td`
 	background-color: ${(props) =>
 		props.unavailable
 			? '#f8d7da'
+			: props.booked
+			? '#b39ddb'
 			: props.available
-			? '#d4edda'
+			? '#a5d6a7'
 			: 'transparent'};
 `;
 
@@ -90,28 +93,6 @@ const Navigation = styled.div`
 const ActionButtonsContainer = styled.div`
 	display: flex;
 	justify-content: flex-end;
-`;
-
-const ActionButtons = styled.div`
-	display: flex;
-	gap: 20px;
-	margin: 20px 0;
-
-	button {
-		background-color: ${theme.colors.green};
-		color: ${theme.colors.yellow};
-		border: none;
-		padding: 10px 20px;
-		border-radius: 6px;
-		cursor: pointer;
-		font-family: Mulish, sans-serif;
-		font-weight: 600;
-		transition: background-color 0.3s ease;
-
-		&:hover {
-			background-color: ${theme.colors.darkGreen};
-		}
-	}
 `;
 
 const hours = Array.from({ length: 13 }, (_, i) => `${7 + i}:00`);
@@ -181,11 +162,11 @@ export default function DoctorAgenda() {
 	);
 
 	const handleLoadAvailability = () => {
-		router.push('#');
+		router.push('/doctor-schedule/create-availability');
 	};
 
 	const handleLoadUnavailability = () => {
-		router.push('#');
+		router.push('/doctor-schedule/create-unavailability');
 	};
 
 	if (!hydrated) return null;
@@ -239,17 +220,19 @@ export default function DoctorAgenda() {
 										const dateStr = formatDate(day);
 										const isUnavailable =
 											unavailableDates.has(dateStr);
-										const isAvailable = groupedSlots[dateStr]?.some(
+										const slotForHour = groupedSlots[dateStr]?.find(
 											(slot) =>
 												slot.start_time.startsWith(
 													hour.padStart(2, '0')
 												)
 										);
+										const slotStatus = slotForHour?.status;
 
 										return (
 											<Cell
 												key={dateStr + hour}
-												available={isAvailable}
+												available={slotStatus === 'available'}
+												booked={slotStatus === 'booked'}
 												unavailable={isUnavailable}
 											/>
 										);
@@ -266,6 +249,10 @@ export default function DoctorAgenda() {
 						<span>Disponible</span>
 					</LegendItem>
 					<LegendItem>
+						<ColorBox color="#b39ddb" />
+						<span>Turno reservado</span>
+					</LegendItem>
+					<LegendItem>
 						<ColorBox color="#ef9a9a" />
 						<span>Indisponible (vacaciones, licencia, etc.)</span>
 					</LegendItem>
@@ -276,14 +263,12 @@ export default function DoctorAgenda() {
 				</Legend>
 			</Container>
 			<ActionButtonsContainer>
-				<ActionButtons>
-					<button onClick={handleLoadAvailability}>
-						Cargar disponibilidad
-					</button>
-					<button onClick={handleLoadUnavailability}>
-						Cargar no disponibilidad
-					</button>
-				</ActionButtons>
+				<ActionButton onClick={handleLoadAvailability}>
+					Cargar disponibilidad
+				</ActionButton>
+				<ActionButton onClick={handleLoadUnavailability}>
+					Cargar no disponibilidad
+				</ActionButton>
 			</ActionButtonsContainer>
 		</PageLayout>
 	);

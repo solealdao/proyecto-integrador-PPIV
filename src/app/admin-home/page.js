@@ -33,6 +33,7 @@ export default function AdminHome() {
 					text="Gestión de Turnos"
 					url="/admin-appointment-management"
 				/>
+				<MenuCard text="Gestión de Usuarios" url="/user-management" />
 				<MenuCard text="Ver estadísticas" url="/admin-stats" />
 			</ButtonContainer>
 		</PageLayout>

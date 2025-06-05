@@ -3,8 +3,14 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { fetchDoctorAgenda } from '@/api/services/availabilityService';
 import useAuth from '@/hooks/useAuth';
+import {
+	dateFormatter,
+	timeFormatter,
+} from '../../../../utils/dateTimeFormatter';
 
 const CalendarContainer = styled.div`
 	max-width: 600px;
@@ -72,13 +78,15 @@ export default function Calendar({ doctorId, onConfirm }) {
 		fetchDoctorAgenda(doctorId, fromStr, toStr, token)
 			.then((res) => {
 				const groupedByDate = res.slots.reduce((acc, slot) => {
+					if (slot.status !== 'available') return acc;
+
 					if (!acc[slot.date]) {
 						acc[slot.date] = {
 							date: slot.date,
 							slots: [],
 						};
 					}
-					acc[slot.date].slots.push(slot.start_time);
+					acc[slot.date].slots.push(slot);
 					return acc;
 				}, {});
 
@@ -99,11 +107,11 @@ export default function Calendar({ doctorId, onConfirm }) {
 
 	const handleConfirm = () => {
 		if (!selectedDate || !selectedSlot) {
-			alert('Por favor, seleccioná fecha y horario.');
+			toast.warning('Por favor, seleccioná fecha y horario.');
 			return;
 		}
 
-		onConfirm(selectedDate, selectedSlot);
+		onConfirm(selectedDate, selectedSlot.start_time);
 	};
 
 	return (
@@ -119,7 +127,7 @@ export default function Calendar({ doctorId, onConfirm }) {
 							setSelectedSlot(null);
 						}}
 					>
-						{date}
+						{dateFormatter(date)}
 					</DateButton>
 				))}
 			</div>
@@ -129,11 +137,12 @@ export default function Calendar({ doctorId, onConfirm }) {
 				{currentDay?.slots?.length ? (
 					currentDay.slots.map((slot) => (
 						<SlotButton
-							key={slot}
-							selected={slot === selectedSlot}
+							key={slot.start_time}
+							selected={slot.start_time === selectedSlot?.start_time}
 							onClick={() => setSelectedSlot(slot)}
 						>
-							{slot}
+							{timeFormatter(slot.start_time)} -{' '}
+							{timeFormatter(slot.end_time)}
 						</SlotButton>
 					))
 				) : (
@@ -142,6 +151,7 @@ export default function Calendar({ doctorId, onConfirm }) {
 			</div>
 
 			<ConfirmButton onClick={handleConfirm}>Confirmar turno</ConfirmButton>
+			<ToastContainer position="top-center" autoClose={3000} />
 		</CalendarContainer>
 	);
 }
