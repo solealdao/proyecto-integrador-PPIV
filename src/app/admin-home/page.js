@@ -16,7 +16,7 @@ const ButtonContainer = styled.div`
 
 export default function AdminHome() {
 	useRoleGuard([3]);
-	const { user, logout } = useAuth();
+	const { user } = useAuth();
 	const fullName = user
 		? `${user.first_name} ${user.last_name}`
 		: 'Administrador/a';
@@ -35,6 +35,7 @@ export default function AdminHome() {
 				/>
 				<MenuCard text="Gestión de Usuarios" url="/user-management" />
 				<MenuCard text="Ver estadísticas" url="/admin-stats" />
+				<MenuCard text="Ir a mensajería" url="/message" />
 			</ButtonContainer>
 		</PageLayout>
 	);

@@ -33,4 +33,10 @@ export const ENDPOINTS = {
 		GET_BY_ID: (id) => `${BASE_URL}/appointments/${id}`,
 		NOTES: (id) => `${BASE_URL}/appointments/${id}/complete`,
 	},
+	MESSAGES: {
+		GET_USERS: `${BASE_URL}/messages/users`,
+		GET_CONVERSATION: (userId) =>
+			`${BASE_URL}/messages/conversation/${userId}`,
+		SEND_MESSAGE: `${BASE_URL}/messages/send`,
+	},
 };
