@@ -23,11 +23,14 @@ export const ENDPOINTS = {
 		DELETE_UNAVAILABLE: (id) => `${BASE_URL}/availability/unavailable/${id}`,
 	},
 	APPOINTMENTS: {
+		GET_ALL: `${BASE_URL}/appointments/all`,
 		CREATE: `${BASE_URL}/appointments`,
 		UPDATE: (id) => `${BASE_URL}/appointments/${id}`,
 		DELETE: (id) => `${BASE_URL}/appointments/${id}`,
 		GET_MY_APPOINTMENTS: `${BASE_URL}/appointments/me`,
-		GET_BY_USER: (userId) => `${BASE_URL}/appointments/user/${userId}`,
+		GET_BY_DOCTOR: (doctorId) =>
+			`${BASE_URL}/appointments/doctor/${doctorId}`,
+		GET_BY_ID: (id) => `${BASE_URL}/appointments/${id}`,
 		NOTES: (id) => `${BASE_URL}/appointments/${id}/complete`,
 	},
 };

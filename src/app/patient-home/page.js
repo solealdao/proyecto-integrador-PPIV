@@ -26,7 +26,10 @@ export default function PatientHome() {
 			showClock={true}
 		>
 			<ButtonContainer>
-				<MenuCard text="Gestión de Turnos" url="/appointment-management" />
+				<MenuCard
+					text="Gestión de Turnos"
+					url="/patient-appointment-management"
+				/>
 				<MenuCard text="Mensajería" url="/message" />
 			</ButtonContainer>
 		</PageLayout>

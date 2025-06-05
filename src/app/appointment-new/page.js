@@ -3,12 +3,15 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useDoctors from '@/hooks/useDoctors';
 import useAuth from '@/hooks/useAuth';
 import Calendar from './componentes/Calendar';
 import { createAppointment } from '@/api/services/appointmentService';
+import usePatients from '@/hooks/usePatients';
 
 const FormContainer = styled.div`
 	display: flex;
@@ -52,40 +55,52 @@ const NextButton = styled.button`
 
 export default function NewAppointment() {
 	const [doctor, setDoctor] = useState('');
+	const [selectedPatient, setSelectedPatient] = useState('');
 	const [showCalendar, setShowCalendar] = useState(false);
 	const router = useRouter();
 	const { token, user } = useAuth();
 
 	const { doctors } = useDoctors(token);
+	const { patients } = usePatients(token);
+
+	const isAdmin = user?.id_user_type === 3;
 
 	const handleSubmit = () => {
-		if (doctor) {
-			setShowCalendar(true);
-		} else {
-			alert('Por favor, seleccione un médico');
+		if (!doctor) {
+			toast.warn('Por favor, seleccione un médico');
+			return;
 		}
+
+		if (isAdmin && !selectedPatient) {
+			toast.warn('Por favor, seleccione un paciente');
+			return;
+		}
+		setShowCalendar(true);
 	};
 
 	const handleCreateAppointment = async (date, time) => {
 		if (!date || !time) {
-			alert('Fecha y hora son obligatorias');
+			toast.error('Fecha y hora son obligatorias');
 			return;
 		}
+		const id_patient = isAdmin ? selectedPatient : user.id_user;
 		try {
 			const appointmentData = {
 				date,
 				time,
 				id_doctor: doctor,
-				id_patient: user.id_user,
+				id_patient,
 			};
 
 			await createAppointment(appointmentData, token);
 
-			alert('Turno reservado con éxito');
-			router.push('/appointment-management');
+			toast.success('Turno reservado con éxito');
+			setTimeout(() => router.push('/patient-appointment-management'), 2000);
 		} catch (error) {
 			console.error(error);
-			alert('Error al reservar turno');
+			const message =
+				error?.response?.data?.message || 'Error al reservar turno';
+			toast.error(message);
 		}
 	};
 
@@ -110,6 +125,24 @@ export default function NewAppointment() {
 							</option>
 						))}
 					</Select>
+
+					{isAdmin && (
+						<>
+							<Label>Seleccionar paciente:</Label>
+							<Select
+								value={selectedPatient}
+								onChange={(e) => setSelectedPatient(e.target.value)}
+							>
+								<option value="">Seleccione un paciente</option>
+								{patients.map((pat) => (
+									<option key={pat.id_user} value={pat.id_user}>
+										{pat.first_name} {pat.last_name}
+									</option>
+								))}
+							</Select>
+						</>
+					)}
+
 					<NextButton onClick={handleSubmit}>Siguiente</NextButton>
 				</FormContainer>
 			) : (
@@ -118,6 +151,14 @@ export default function NewAppointment() {
 					onConfirm={(date, time) => handleCreateAppointment(date, time)}
 				/>
 			)}
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+				hideProgressBar={false}
+				closeOnClick
+				pauseOnHover
+				draggable
+			/>
 		</PageLayout>
 	);
 }

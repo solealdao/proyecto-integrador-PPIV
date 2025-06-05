@@ -3,9 +3,12 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { registerUser } from '@/api/services/userService';
+import ActionButton from '@/components/ActionButton';
 
 const Form = styled.form`
 	display: flex;
@@ -36,23 +39,7 @@ const Input = styled.input`
 const ButtonContainer = styled.div`
 	margin-top: 30px;
 	display: flex;
-	justify-content: space-between;
-`;
-
-const ActionButton = styled.button`
-	background-color: ${theme.colors.green};
-	color: ${theme.colors.yellow};
-	border: none;
-	padding: 10px 20px;
-	border-radius: 6px;
-	cursor: pointer;
-	font-family: Mulish, sans-serif;
-	font-weight: 600;
-	transition: background-color 0.3s ease;
-
-	&:hover {
-		background-color: ${theme.colors.darkGreen};
-	}
+	justify-content: center;
 `;
 
 const Select = styled.select`
@@ -87,10 +74,13 @@ export default function UserNew() {
 
 		try {
 			await registerUser(userData);
-			router.push('/user-management');
+			toast.success('Usuario registrado correctamente!');
+			setTimeout(() => {
+				router.push('/user-management');
+			}, 1500);
 		} catch (err) {
 			console.error('Error al registrar usuario:', err);
-			alert('Ocurrió un error al registrar el usuario.');
+			toast.error('Ocurrió un error al registrar el usuario.');
 		}
 	};
 
@@ -183,6 +173,18 @@ export default function UserNew() {
 					<ActionButton type="submit">Guardar</ActionButton>
 				</ButtonContainer>
 			</Form>
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+				theme="colored"
+			/>
 		</PageLayout>
 	);
 }

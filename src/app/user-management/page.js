@@ -2,33 +2,19 @@
 
 import PageLayout from '@/components/PageLayout';
 import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styled from '@emotion/styled';
-import theme from '@/app/theme';
 import { useRouter } from 'next/navigation';
 import UserItem from '@/components/UserItem';
 import { deleteUser, fetchAllUsers } from '@/api/services/userService';
 import useAuth from '@/hooks/useAuth';
+import ActionButton from '@/components/ActionButton';
 
 const ButtonContainer = styled.div`
 	margin: 30px 0;
 	display: flex;
-	justify-content: space-between;
-`;
-
-const ActionButton = styled.button`
-	background-color: ${theme.colors.green};
-	color: ${theme.colors.yellow};
-	border: none;
-	padding: 10px 20px;
-	border-radius: 6px;
-	cursor: pointer;
-	font-family: Mulish, sans-serif;
-	font-weight: 600;
-	transition: background-color 0.3s ease;
-
-	&:hover {
-		background-color: ${theme.colors.darkGreen};
-	}
+	justify-content: center;
 `;
 
 const UserListContainer = styled.ul`
@@ -49,7 +35,7 @@ export default function UserManagementPage() {
 				const data = await fetchAllUsers(token);
 				setUsers(data);
 			} catch (error) {
-				alert('Error al cargar usuarios: ' + error.message);
+				toast.error('Error al cargar usuarios: ' + error.message);
 			}
 		};
 
@@ -64,10 +50,10 @@ export default function UserManagementPage() {
 
 		try {
 			await deleteUser(userId, token);
-			alert('Usuario eliminado correctamente');
+			toast.success('Usuario eliminado correctamente');
 			setUsers((prev) => prev.filter((user) => user.id_user !== userId));
 		} catch (error) {
-			alert('Error al eliminar usuario: ' + error.message);
+			toast.error('Error al eliminar usuario: ' + error.message);
 		}
 	};
 
@@ -92,6 +78,7 @@ export default function UserManagementPage() {
 					Nuevo Usuario
 				</ActionButton>
 			</ButtonContainer>
+			<ToastContainer position="top-right" autoClose={3000} />
 		</PageLayout>
 	);
 }

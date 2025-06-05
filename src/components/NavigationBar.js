@@ -52,11 +52,11 @@ export default function NavigationBar({ showBack = true, homePath }) {
 	const isHomeRoute = pathname?.includes('-home');
 
 	const roleBasedHome =
-		user?.role_id === 1
+		user?.id_user_type === 1
 			? '/patient-home'
-			: user?.role_id === 2
+			: user?.id_user_type === 2
 			? '/doctor-home'
-			: user?.role_id === 3
+			: user?.id_user_type === 3
 			? '/admin-home'
 			: '/';
 
