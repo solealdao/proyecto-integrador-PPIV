@@ -3,7 +3,12 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import useAuth from '@/hooks/useAuth';
+import useDoctors from '@/hooks/useDoctors';
+import usePatients from '@/hooks/usePatients';
+import { useEffect, useState } from 'react';
+import { dateFormatter, timeFormatter } from '../../../utils/dateTimeFormatter';
 
 const Container = styled.div`
 	max-width: 600px;
@@ -39,29 +44,73 @@ const InfoTitle = styled.h3`
 `;
 
 const ButtonContainer = styled.div`
-	margin-top: 30px;
+	margin: 4em;
 	display: flex;
 	justify-content: center;
 `;
 
-const BackButton = styled.button`
-	background-color: ${theme.colors.darkGreen};
+const ActionButton = styled.button`
+	background-color: ${theme.colors.green};
 	color: ${theme.colors.yellow};
-	padding: 12px 30px;
 	border: none;
-	border-radius: 12px;
-	font-size: 16px;
+	padding: 10px 20px;
+	border-radius: 6px;
 	cursor: pointer;
 	font-family: Mulish, sans-serif;
+	font-weight: 600;
+	transition: background-color 0.3s ease;
+	margin: 0em 2em;
+
+	&:hover {
+		background-color: ${theme.colors.darkGreen};
+	}
 `;
 
-export default function ComprobanteTurno() {
+export default function AppointmentReceipt() {
+	const { token } = useAuth();
 	const searchParams = useSearchParams();
-  	const medico = searchParams.get('medico');
-  	const fechaTurno = searchParams.get('fecha');
-  	const horaTurno = searchParams.get('hora');
-	const cancelar = () => {
-		window.location.href = '/appointment-management';
+	const router = useRouter();
+
+	const doctorId = Number(searchParams.get('doctor'));
+	const patientId = Number(searchParams.get('patient'));
+	const date = searchParams.get('date');
+	const time = searchParams.get('time');
+	const appointmentId = searchParams.get('id');
+
+	const { doctors } = useDoctors(token);
+	const { patients } = usePatients(token);
+
+	const [doctorName, setDoctorName] = useState('');
+	const [patientName, setPatientName] = useState('');
+
+	useEffect(() => {
+		if (doctors?.length > 0) {
+			const doctor = doctors.find((d) => d.id_user === doctorId);
+			setDoctorName(
+				doctor
+					? `${doctor.first_name} ${doctor.last_name}`
+					: 'Desconocido/a'
+			);
+		}
+	}, [doctors, doctorId]);
+
+	useEffect(() => {
+		if (patients?.length > 0) {
+			const patient = patients.find((p) => p.id_user === patientId);
+			setPatientName(
+				patient
+					? `${patient.first_name} ${patient.last_name}`
+					: 'Desconocido/a'
+			);
+		}
+	}, [patients, patientId]);
+
+	const printReceipt = () => {
+		window.print();
+	};
+
+	const goToHistoryAppointment = () => {
+		router.push('/appointment-history');
 	};
 
 	return (
@@ -70,21 +119,28 @@ export default function ComprobanteTurno() {
 				<Header>
 					<Logo src="/logo.png" alt="Logo" />
 					<Title>Nueva Clinica</Title>
-					<Title>ID: -</Title>
+					<Title>ID: {appointmentId || '-'}</Title>
 				</Header>
 
 				<InfoRow>
-					<InfoTitle>Paciente: -</InfoTitle>
+					<InfoTitle>Paciente: {patientName}</InfoTitle>
 				</InfoRow>
 				<InfoRow>
-          			<InfoTitle>Profesional: {medico}</InfoTitle>
-        		</InfoRow>
+					<InfoTitle>Doctor: {doctorName}</InfoTitle>
+				</InfoRow>
 				<InfoRow>
-					<InfoTitle>Fecha: {fechaTurno}</InfoTitle>
-					<InfoTitle>Hora: {horaTurno}</InfoTitle>
+					<InfoTitle>Date: {dateFormatter(date) || '-'}</InfoTitle>
+					<InfoTitle>Time: {timeFormatter(time) || '-'}</InfoTitle>
 					<InfoTitle>Especialidad: Clínica Médica</InfoTitle>
 				</InfoRow>
 			</Container>
+
+			<ButtonContainer>
+				<ActionButton onClick={printReceipt}>
+					Imprimir comprobante
+				</ActionButton>
+				<ActionButton onClick={goToHistoryAppointment}>Volver</ActionButton>
+			</ButtonContainer>
 		</PageLayout>
 	);
 }

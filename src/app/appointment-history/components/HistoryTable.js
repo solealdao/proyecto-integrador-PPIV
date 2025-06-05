@@ -5,6 +5,7 @@ import {
 	timeFormatter,
 } from '../../../../utils/dateTimeFormatter';
 import { Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const columnWidths = [
 	'100px', // Fecha
@@ -88,6 +89,8 @@ const ViewButton = styled.button`
 `;
 
 export default function HistoryTable({ appointments = [] }) {
+	const router = useRouter();
+
 	if (!appointments.length) {
 		return <p>No se encontraron turnos</p>;
 	}
@@ -125,7 +128,9 @@ export default function HistoryTable({ appointments = [] }) {
 							<ViewButton
 								aria-label={`Ver detalles del turno ${appt.id_appointment}`}
 								onClick={() =>
-									router.push(`/appointments/${appt.id_appointment}`)
+									router.push(
+										`/appointment-detail/${appt.id_appointment}`
+									)
 								}
 							>
 								<Eye />

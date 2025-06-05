@@ -29,6 +29,10 @@ export const getAppointmentsByUser = async (userId, token) => {
 	return requester.get(ENDPOINTS.APPOINTMENTS.GET_BY_USER(userId), token);
 };
 
+export const getAppointmentById = async (id, token) => {
+	return requester.get(ENDPOINTS.APPOINTMENTS.GET_BY_ID(id), token);
+};
+
 export const completeAppointment = async (id, notesData, token) => {
 	return requester.post(ENDPOINTS.APPOINTMENTS.NOTES(id), notesData, token);
 };

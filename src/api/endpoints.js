@@ -29,6 +29,7 @@ export const ENDPOINTS = {
 		DELETE: (id) => `${BASE_URL}/appointments/${id}`,
 		GET_MY_APPOINTMENTS: `${BASE_URL}/appointments/me`,
 		GET_BY_USER: (userId) => `${BASE_URL}/appointments/user/${userId}`,
+		GET_BY_ID: (id) => `${BASE_URL}/appointments/${id}`,
 		NOTES: (id) => `${BASE_URL}/appointments/${id}/complete`,
 	},
 };
