@@ -4,7 +4,7 @@ import {
 	dateFormatter,
 	timeFormatter,
 } from '../../../../utils/dateTimeFormatter';
-import { Eye, Trash2 } from 'lucide-react';
+import { Eye, FileText, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const columnWidths = [
@@ -166,6 +166,18 @@ export default function HistoryTable({
 								>
 									<Trash2 />
 								</DeleteButton>
+							)}
+							{isDoctor && appt.status != 'canceled' && (
+								<ViewButton
+									aria-label={`Agregar notas al turno ${appt.id_appointment}`}
+									onClick={() =>
+										router.push(
+											`/appointment-notes/${appt.id_appointment}`
+										)
+									}
+								>
+									<FileText />
+								</ViewButton>
 							)}
 						</Td>
 					</Tr>
