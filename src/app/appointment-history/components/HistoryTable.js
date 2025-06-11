@@ -4,7 +4,7 @@ import {
 	dateFormatter,
 	timeFormatter,
 } from '../../../../utils/dateTimeFormatter';
-import { Eye, FileText, Trash2 } from 'lucide-react';
+import { Eye, FileText, Trash2, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const columnWidths = [
@@ -111,6 +111,7 @@ export default function HistoryTable({
 	appointments = [],
 	onDelete,
 	isDoctor = false,
+	isPatient,
 }) {
 	const router = useRouter();
 
@@ -179,6 +180,18 @@ export default function HistoryTable({
 									<FileText />
 								</ViewButton>
 							)}
+							{isPatient &&
+								appt.status.toLowerCase() === 'completed' && (
+									<ViewButton
+										aria-label={`Hacer encuesta para turno ${appt.id_appointment}`}
+										onClick={() =>
+											router.push(`/survey/${appt.id_appointment}`)
+										}
+										title="Calificar turno"
+									>
+										<Star />
+									</ViewButton>
+								)}
 						</Td>
 					</Tr>
 				))}

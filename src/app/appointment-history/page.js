@@ -154,6 +154,7 @@ export default function AppointmentHistory() {
 					appointments={appointments}
 					onDelete={openConfirmModal}
 					isDoctor={user?.id_user_type === 2}
+					isPatient={user?.id_user_type === 1}
 				/>
 			)}
 			<ButtonContainer>

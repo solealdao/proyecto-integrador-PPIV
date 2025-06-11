@@ -39,4 +39,9 @@ export const ENDPOINTS = {
 			`${BASE_URL}/messages/conversation/${userId}`,
 		SEND_MESSAGE: `${BASE_URL}/messages/send`,
 	},
+	SURVEYS: {
+		GET_ALL: `${BASE_URL}/surveys`,
+		GET_BY_DOCTOR: `${BASE_URL}/surveys/by-doctor`,
+		SUBMIT_SURVEY: (appointmentId) => `${BASE_URL}/surveys/${appointmentId}`,
+	},
 };
