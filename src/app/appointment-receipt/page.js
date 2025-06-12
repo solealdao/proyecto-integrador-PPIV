@@ -3,7 +3,7 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import useDoctors from '@/hooks/useDoctors';
 import usePatients from '@/hooks/usePatients';
@@ -50,16 +50,15 @@ const ButtonContainer = styled.div`
 	justify-content: center;
 `;
 
-export default function AppointmentReceipt() {
+export default function AppointmentReceiptPage({ searchParams }) {
 	const { token } = useAuth();
-	const searchParams = useSearchParams();
 	const router = useRouter();
 
-	const doctorId = Number(searchParams.get('doctor'));
-	const patientId = Number(searchParams.get('patient'));
-	const date = searchParams.get('date');
-	const time = searchParams.get('time');
-	const appointmentId = searchParams.get('id');
+	const doctorId = Number(searchParams?.doctor);
+	const patientId = Number(searchParams?.patient);
+	const date = searchParams?.date;
+	const time = searchParams?.time;
+	const appointmentId = searchParams?.id;
 
 	const { doctors } = useDoctors(token);
 	const { patients } = usePatients(token);

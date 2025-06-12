@@ -121,7 +121,7 @@ export default function DoctorAgenda() {
 	}, []);
 
 	useEffect(() => {
-		if (!user || !token) {
+		if (!user || !token || !weekStart) {
 			return;
 		}
 

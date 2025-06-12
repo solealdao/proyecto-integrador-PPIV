@@ -53,6 +53,7 @@ export default function MessagePage() {
 	const handleSelectUser = (userId) => {
 		router.push(`/message/chat/${userId}`);
 	};
+
 	return (
 		<PageLayout
 			showImage={true}
