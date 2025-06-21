@@ -34,6 +34,23 @@ Este proyecto es parte del trabajo integrador final de la materia **Prácticas P
 
 ---
 
+## 🗂️ Estructura de carpetas
+
+La organización del proyecto sigue una estructura modular dentro de la carpeta `src`, optimizada para proyectos con App Router de Next.js:
+
+```bash
+src/
+├── api/          # Servicios para conexión con el backend
+├── app/          # Sistema de rutas y vistas principales (App Router)
+│   └── (page.tsx, layout.tsx, etc.)
+├── components/   # Componentes reutilizables y genéricos
+├── context/      # Proveedores y estados globales (Auth)
+├── hooks/        # Custom hooks
+utils/            # Funciones auxiliares de uso general
+```
+
+---
+
 ## ⚙️ Instalación y ejecución
 
 1. **Clonar el repositorio**
