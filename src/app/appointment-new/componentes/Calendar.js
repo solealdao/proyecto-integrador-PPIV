@@ -150,7 +150,7 @@ export default function Calendar({ doctorId, onConfirm }) {
 				)}
 			</div>
 
-			<ConfirmButton onClick={handleConfirm}>Confirmar turno</ConfirmButton>
+			<ConfirmButton onClick={handleConfirm}>Confirmar Turno</ConfirmButton>
 			<ToastContainer position="top-center" autoClose={3000} />
 		</CalendarContainer>
 	);

@@ -119,8 +119,8 @@ export default function AdminStats() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/bar-chart.png"
-			title="Ver Estadísticas"
+			imageUrl="/chart.png"
+			title="Estadísticas"
 			showClock={true}
 		>
 			<Container>

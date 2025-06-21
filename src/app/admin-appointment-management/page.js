@@ -16,7 +16,7 @@ export default function AppointmentHome() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Gestión de Turnos"
 			showClock={true}
 		>

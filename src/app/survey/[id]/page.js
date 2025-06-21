@@ -105,7 +105,7 @@ export default function SurveyPage() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Calificar turno"
 			showClock={true}
 		>
@@ -138,7 +138,7 @@ export default function SurveyPage() {
 
 					<ButtonContainer>
 						<ActionButton type="submit" disabled={loading}>
-							Enviar encuesta
+							Enviar Encuesta
 						</ActionButton>
 					</ButtonContainer>
 				</form>

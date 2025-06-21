@@ -3,7 +3,7 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import useDoctors from '@/hooks/useDoctors';
 import usePatients from '@/hooks/usePatients';
@@ -22,13 +22,15 @@ const Container = styled.div`
 
 const Header = styled.div`
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
 	align-items: center;
+	gap: 10px;
 	margin-bottom: 20px;
 `;
 
 const Logo = styled.img`
-	width: 80px;
+	width: 220px;
+	margin-bottom: 10px
 `;
 
 const Title = styled.h2`
@@ -36,12 +38,22 @@ const Title = styled.h2`
 `;
 
 const InfoRow = styled.div`
-	margin-bottom: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 `;
 
 const InfoTitle = styled.h3`
 	margin: 5px 0;
 	color: ${theme.colors.gray};
+`;
+
+const InfoSection = styled.div`
+	padding: 20px;
+	border: 2px solid ${theme.colors.lightGray}; /* o darkGreen si querés destacarlo más */
+	border-radius: 10px;
+	margin-top: 20px;
+	background-color: ${theme.colors.white};
 `;
 
 const ButtonContainer = styled.div`
@@ -50,43 +62,37 @@ const ButtonContainer = styled.div`
 	justify-content: center;
 `;
 
-export default function AppointmentReceiptPage({ searchParams }) {
-	const { token } = useAuth();
+export default function AppointmentReceiptPage() {
 	const router = useRouter();
-
-	const doctorId = Number(searchParams?.doctor);
-	const patientId = Number(searchParams?.patient);
-	const date = searchParams?.date;
-	const time = searchParams?.time;
-	const appointmentId = searchParams?.id;
+	const searchParams = useSearchParams();
+	
+	const { token } = useAuth();
 
 	const { doctors } = useDoctors(token);
-	const { patients } = usePatients(token);
+  	const { patients } = usePatients(token);
 
-	const [doctorName, setDoctorName] = useState('');
-	const [patientName, setPatientName] = useState('');
+  	const [doctorName, setDoctorName] = useState('');
+  	const [patientName, setPatientName] = useState('');
+  	const [loaded, setLoaded] = useState(false);
 
-	useEffect(() => {
-		if (doctors?.length > 0) {
-			const doctor = doctors.find((d) => d.id_user === doctorId);
-			setDoctorName(
-				doctor
-					? `${doctor.first_name} ${doctor.last_name}`
-					: 'Desconocido/a'
-			);
-		}
-	}, [doctors, doctorId]);
+	const doctorId = Number(searchParams.get('doctor'));
+	const patientId = Number(searchParams.get('patient'));
+	const date = searchParams.get('date');
+	const time = searchParams.get('time');
+	const appointmentId = searchParams.get('id');
 
 	useEffect(() => {
-		if (patients?.length > 0) {
-			const patient = patients.find((p) => p.id_user === patientId);
-			setPatientName(
-				patient
-					? `${patient.first_name} ${patient.last_name}`
-					: 'Desconocido/a'
-			);
+		if (doctors.length && patients.length) {
+			const doctor = doctors.find(d => d.id_user === Number(doctorId));
+			const patient = patients.find(p => p.id_user === Number(patientId));
+
+			setDoctorName(doctor ? `${doctor.first_name} ${doctor.last_name}` : 'Desconocido/a');
+			setPatientName(patient ? `${patient.first_name} ${patient.last_name}` : 'Desconocido/a');
+			setLoaded(true);
 		}
-	}, [patients, patientId]);
+  	}, [doctors, patients, doctorId, patientId]);
+
+ 	if (!loaded) return <div>Cargando...</div>;
 
 	const printReceipt = () => {
 		window.print();
@@ -96,33 +102,38 @@ export default function AppointmentReceiptPage({ searchParams }) {
 		router.push('/appointment-history');
 	};
 
+	const goToAppointmentManagement = () => {
+		router.push('/patient-appointment-management');
+	}
+
 	return (
-		<PageLayout title="Comprobante de turno" showClock>
+		<PageLayout
+			showImage={true}
+			imageUrl="/receipt.png"
+			title="Comprobante de Turno"
+			showClock={true}
+		>
 			<Container>
 				<Header>
-					<Logo src="/logo.png" alt="Logo" />
-					<Title>Nueva Clinica</Title>
-					<Title>ID: {appointmentId || '-'}</Title>
+					<Logo src="/login-logo.png" alt="Logo" />
+					<Title>COMPROBANTE DE TURNO</Title>
+					<Title>TURNO N° {appointmentId || '-'}</Title>
 				</Header>
-
-				<InfoRow>
-					<InfoTitle>Paciente: {patientName}</InfoTitle>
-				</InfoRow>
-				<InfoRow>
-					<InfoTitle>Doctor: {doctorName}</InfoTitle>
-				</InfoRow>
-				<InfoRow>
-					<InfoTitle>Date: {dateFormatter(date) || '-'}</InfoTitle>
-					<InfoTitle>Time: {timeFormatter(time) || '-'}</InfoTitle>
-					<InfoTitle>Especialidad: Clínica Médica</InfoTitle>
-				</InfoRow>
+				<InfoSection>
+					<InfoRow>
+						<InfoTitle>Paciente: {patientName}</InfoTitle>
+						<InfoTitle>Doctor: {doctorName}</InfoTitle>
+						<InfoTitle>Especialidad: Clínica Médica</InfoTitle>
+						<InfoTitle>Fecha: {dateFormatter(date) || '-'}</InfoTitle>
+						<InfoTitle>Hora: {timeFormatter(time) || '-'}</InfoTitle>
+					</InfoRow>
+				</InfoSection>
 			</Container>
 
 			<ButtonContainer>
-				<ActionButton onClick={printReceipt}>
-					Imprimir comprobante
-				</ActionButton>
-				<ActionButton onClick={goToHistoryAppointment}>Volver</ActionButton>
+				<ActionButton onClick={printReceipt}>Imprimir Comprobante</ActionButton>
+				<ActionButton onClick={goToHistoryAppointment}>Historial de Turnos</ActionButton>
+				<ActionButton onClick={goToAppointmentManagement}>Ir a Gestión de Turnos</ActionButton>
 			</ButtonContainer>
 		</PageLayout>
 	);

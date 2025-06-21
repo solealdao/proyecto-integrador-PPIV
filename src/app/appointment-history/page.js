@@ -99,6 +99,7 @@ export default function AppointmentHistory() {
 	};
 
 	useEffect(() => {
+		if (!user || !token) return;
 		fetchAppointments();
 	}, [user, token]);
 
@@ -140,10 +141,12 @@ export default function AppointmentHistory() {
 		}
 	};
 
+	if (!user || !token) return <p>Cargando...</p>;
+
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Gestión de Turnos"
 			showClock={true}
 		>

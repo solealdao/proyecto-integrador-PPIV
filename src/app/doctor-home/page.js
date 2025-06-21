@@ -22,14 +22,14 @@ export default function DoctorHome() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/doctor_profile.jpg"
+			imageUrl="/doctor.png"
 			title={fullName}
 			showClock={true}
 		>
 			<ButtonContainer>
-				<MenuCard text="Consultar agenda" url="/doctor-schedule" />
-				<MenuCard text="Ver historial" url="/appointment-history" />
-				<MenuCard text="Ir a mensajería" url="/message" />
+				<MenuCard text="Consultar Agenda" url="/doctor-schedule" />
+				<MenuCard text="Ver Historial" url="/appointment-history" />
+				<MenuCard text="Ir a Mensajería" url="/message" />
 			</ButtonContainer>
 		</PageLayout>
 	);

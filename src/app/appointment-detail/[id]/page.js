@@ -209,7 +209,7 @@ export default function AppointmentDetail() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Detalle del turno"
 			showClock={true}
 		>

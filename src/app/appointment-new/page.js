@@ -92,11 +92,17 @@ export default function NewAppointment() {
 				id_patient,
 			};
 
-			await createAppointment(appointmentData, token);
+		const createdAppointment = await createAppointment(appointmentData, token);
 
-			toast.success('Turno reservado con éxito');
-			setTimeout(() => router.push('/patient-appointment-management'), 2000);
-		} catch (error) {
+		toast.success('Turno reservado con éxito');
+
+		setTimeout(() => {
+			router.push(
+				`/appointment-receipt?doctor=${doctor}&date=${date}&time=${time}&id=${createdAppointment.id_appointment}&patient=${id_patient}`
+			);
+		}, 2000);
+		
+	} catch (error) {
 			console.error(error);
 			const message =
 				error?.response?.data?.message || 'Error al reservar turno';
@@ -107,7 +113,7 @@ export default function NewAppointment() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Gestión de Turnos"
 			showClock={true}
 		>

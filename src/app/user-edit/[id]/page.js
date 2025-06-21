@@ -102,7 +102,7 @@ export default function UserEdit() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/user.svg"
+			imageUrl="/users.png"
 			title="Editar Usuario"
 			showClock={true}
 		>

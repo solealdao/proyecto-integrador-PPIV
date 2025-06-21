@@ -9,9 +9,8 @@ const ClockWrapper = styled.div`
 	color: ${theme.colors.lightText};
 	position: absolute;
 	left: 70%;
-	top: 50px;
+	top: 80px;
 	transform: translateX(-50%);
-	text-shadow: 0 0 20px rgba(10, 175, 230, 1), 0 0 20px rgba(10, 175, 230, 0);
 `;
 
 const TimeText = styled.span`

@@ -21,7 +21,7 @@ export default function PatientHome() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/patient_profile.jpeg"
+			imageUrl="/patient.png"
 			title={fullName}
 			showClock={true}
 		>

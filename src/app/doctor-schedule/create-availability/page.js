@@ -115,7 +115,7 @@ export default function CreateAvailability() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Gestión de Agenda Semanal"
 			showClock={true}
 		>
@@ -156,7 +156,7 @@ export default function CreateAvailability() {
 					{error && <p style={{ color: 'red' }}>{error}</p>}
 					<ActionButtonContainer>
 						<ActionButton type="submit" disabled={loading}>
-							{loading ? 'Guardando...' : 'Guardar disponibilidad'}
+							{loading ? 'Guardando...' : 'Guardar Disponibilidad'}
 						</ActionButton>
 					</ActionButtonContainer>
 				</form>

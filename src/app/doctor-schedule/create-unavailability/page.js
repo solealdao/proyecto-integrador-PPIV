@@ -93,12 +93,12 @@ export default function CreateUnavailability() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Gestión de Agenda Semanal"
 			showClock={true}
 		>
 			<Container>
-				<h2>Crear No Disponibilidad</h2>
+				<h2 style={{ textAlign: 'center' }}>Crear no disponibilidad</h2>
 				<form onSubmit={handleSubmit}>
 					<Label>Fecha de excepción</Label>
 					<Input
@@ -119,7 +119,7 @@ export default function CreateUnavailability() {
 					{error && <p style={{ color: 'red' }}>{error}</p>}
 					<ActionButtonContainer>
 						<ActionButton type="submit" disabled={loading}>
-							{loading ? 'Guardando...' : 'Guardar no disponibilidad'}
+							{loading ? 'Guardando...' : 'Guardar No Disponibilidad'}
 						</ActionButton>
 					</ActionButtonContainer>
 				</form>

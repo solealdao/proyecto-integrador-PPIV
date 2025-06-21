@@ -57,8 +57,8 @@ export default function MessagePage() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
-			title="Canal de mensajería"
+			imageUrl="/chat.png"
+			title="Mensajería"
 			showClock={true}
 		>
 			{' '}

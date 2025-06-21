@@ -24,7 +24,7 @@ export default function AdminHome() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/admin_profile.jpg"
+			imageUrl="/admin.png"
 			title={fullName}
 			showClock={true}
 		>
@@ -34,8 +34,8 @@ export default function AdminHome() {
 					url="/admin-appointment-management"
 				/>
 				<MenuCard text="Gestión de Usuarios" url="/user-management" />
-				<MenuCard text="Ver estadísticas" url="/admin-stats" />
-				<MenuCard text="Ir a mensajería" url="/message" />
+				<MenuCard text="Ver Estadísticas" url="/admin-stats" />
+				<MenuCard text="Ir a Mensajería" url="/message" />
 			</ButtonContainer>
 		</PageLayout>
 	);

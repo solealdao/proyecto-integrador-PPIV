@@ -60,7 +60,7 @@ export default function UserManagementPage() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/user.svg"
+			imageUrl="/users.png"
 			title="Gestión de Usuarios"
 			showClock={true}
 		>

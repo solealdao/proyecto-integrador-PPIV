@@ -109,6 +109,17 @@ export default function ChatPage() {
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState('');
 	const [charLimit, setCharLimit] = useState(300);
+	const [hasMounted, setHasMounted] = useState(false);
+
+	useEffect(() => {
+		setHasMounted(true);
+	}, []);
+
+	useEffect(() => {
+    	if (hasMounted && !user) {
+      		router.push('/');
+    	}
+  	}, [hasMounted, user, router]);
 
 	useEffect(() => {
 		if (!id || !token) return;
@@ -121,6 +132,8 @@ export default function ChatPage() {
 				console.error('Error loading messages:', err);
 			});
 	}, [id, token]);
+
+	if (!hasMounted || !user) return null;
 
 	const handleSendMessage = async () => {
 		if (newMessage.trim() === '') return;
@@ -170,24 +183,26 @@ export default function ChatPage() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/mensajeria.png"
+			imageUrl="/chat.png"
 			title="Mensajería"
 			showClock={true}
 		>
-			<AlertBox>
-				<strong>Estimado/a paciente:</strong>
-				<ol>
-					<li>Esta vía de comunicación no es para urgencias.</li>
-					<li>
-						Su médico/a recibirá el mensaje exclusivamente los días
-						hábiles de 8 a 20 hs.
-					</li>
-					<li>
-						Responderá dentro de las 48 hs hábiles desde la recepción de
-						su mensaje.
-					</li>
-				</ol>
-			</AlertBox>
+			{user?.id_user_type === 1 && (
+				<AlertBox>
+					<strong>Estimado/a paciente:</strong>
+					<ol>
+						<li>Esta vía de comunicación no es para urgencias.</li>
+						<li>
+							Su médico/a recibirá el mensaje exclusivamente los días
+							hábiles de 8 a 20 hs.
+						</li>
+						<li>
+							Responderá dentro de las 48 hs hábiles desde la recepción de
+							su mensaje.
+						</li>
+					</ol>
+				</AlertBox>
+			)}
 
 			<ChatBox>
 				{messages.map((msg, idx) => {
@@ -222,7 +237,7 @@ export default function ChatPage() {
 				</small>
 				<ButtonGroup>
 					<Button onClick={handleCancel}>Cancelar</Button>
-					<Button onClick={handleSendMessage}>Enviar mensaje</Button>
+					<Button onClick={handleSendMessage}>Enviar Mensaje</Button>
 				</ButtonGroup>
 			</Controls>
 		</PageLayout>

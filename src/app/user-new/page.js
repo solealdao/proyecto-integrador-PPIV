@@ -100,7 +100,7 @@ export default function UserNew() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/user.svg"
+			imageUrl="/users.png"
 			title="Nuevo Usuario"
 			showClock={true}
 		>

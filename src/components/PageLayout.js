@@ -86,7 +86,7 @@ const PageLayout = ({
   return (
     <Wrapper>
       <Header>
-        {showCalendarIcon && <CalendarIcon src="/icono_calendario.svg" alt="Calendario" />}
+        {showCalendarIcon && <CalendarIcon src="/calendar.png" alt="Calendario" />}
         {title && <HeaderTitle>{title}</HeaderTitle>}
         {showImage && <ProfileImage src={imageUrl} alt="Imagen" />}
         {showClock && <Clock />}

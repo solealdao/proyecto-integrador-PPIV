@@ -26,10 +26,16 @@ const Card = styled.div`
 const ImageSection = styled.div`
 	flex: 1;
 	background-color: ${theme.colors.lightText};
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+
 	img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		object-position: right center;
 	}
 `;
 
@@ -44,22 +50,23 @@ const FormSection = styled.div`
 const StyledForm = styled.form`
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	gap: 5px;
 `;
 
-const Logo = styled.h2`
-	font-size: 24px;
-	font-weight: bold;
-	color: ${theme.colors.green};
+const Logo = styled.div`
 	text-align: center;
-	margin-bottom: 20px;
+	img {
+		width: 100%;
+		max-width: 300px;
+		height: auto;
+	}
 `;
 
 const Title = styled.h3`
 	color: ${theme.colors.darkText};
 	font-size: 20px;
 	text-align: center;
-	margin-bottom: 30px;
+	margin-bottom: 18px;
 `;
 
 const Input = styled.input`
@@ -80,6 +87,7 @@ const Button = styled.button`
 	border-radius: 8px;
 	cursor: pointer;
 	font-weight: bold;
+	font-size: 18px;
 	transition: background 0.3s;
 
 	&:hover {
@@ -146,7 +154,7 @@ export default function LoginPage() {
 					<img src="/login_img.jpg" alt="Inicio" />
 				</ImageSection>
 				<FormSection>
-					<Logo>NUEVA CLÍNICA</Logo>
+					<Logo><img src="/login-logo.png" alt="NUEVA CLÍNICA" /></Logo>
 					<Title>Bienvenido/a</Title>
 					<StyledForm onSubmit={handleSubmit}>
 						<Input

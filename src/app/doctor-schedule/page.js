@@ -174,7 +174,7 @@ export default function DoctorAgenda() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Gestión de Agenda Semanal"
 			showClock={true}
 		>
@@ -250,7 +250,7 @@ export default function DoctorAgenda() {
 					</LegendItem>
 					<LegendItem>
 						<ColorBox color="#b39ddb" />
-						<span>Turno reservado</span>
+						<span>Turno Reservado</span>
 					</LegendItem>
 					<LegendItem>
 						<ColorBox color="#ef9a9a" />
@@ -258,16 +258,16 @@ export default function DoctorAgenda() {
 					</LegendItem>
 					<LegendItem>
 						<ColorBox color="transparent" />
-						<span>No disponible</span>
+						<span>No Disponible</span>
 					</LegendItem>
 				</Legend>
 			</Container>
 			<ActionButtonsContainer>
 				<ActionButton onClick={handleLoadAvailability}>
-					Cargar disponibilidad
+					Cargar Disponibilidad
 				</ActionButton>
 				<ActionButton onClick={handleLoadUnavailability}>
-					Cargar no disponibilidad
+					Cargar No Disponibilidad
 				</ActionButton>
 			</ActionButtonsContainer>
 		</PageLayout>

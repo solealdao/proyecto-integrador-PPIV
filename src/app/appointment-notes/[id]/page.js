@@ -79,7 +79,7 @@ export default function AppointmentNotesPage() {
 	return (
 		<PageLayout
 			showImage={true}
-			imageUrl="/icono_calendario.svg"
+			imageUrl="/calendar.png"
 			title="Observaciones clínicas"
 			showClock={true}
 		>
@@ -94,7 +94,7 @@ export default function AppointmentNotesPage() {
 						placeholder="Escribí aquí tus observaciones clínicas..."
 					/>
 					<ButtonContainer>
-						<ActionButton type="submit">Guardar notas</ActionButton>
+						<ActionButton type="submit">Guardar Notas</ActionButton>
 					</ButtonContainer>
 				</form>
 				<ToastContainer
