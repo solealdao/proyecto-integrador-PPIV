@@ -63,11 +63,11 @@ const StatusTd = styled.td`
 
 	background-color: ${({ status }) => {
 		switch (status.toLowerCase()) {
-			case 'confirmed':
+			case 'confirmado':
 				return '#4caf50';
-			case 'pending':
+			case 'pendiente':
 				return '#2196f3';
-			case 'canceled':
+			case 'cancelado':
 				return '#f44336';
 			default:
 				return theme.colors.darkGreen;
@@ -118,6 +118,7 @@ export default function HistoryTable({
 	if (!appointments.length) {
 		return <p>No se encontraron turnos</p>;
 	}
+
 	return (
 		<Table>
 			<thead>
@@ -163,35 +164,36 @@ export default function HistoryTable({
 								<DeleteButton
 									aria-label={`Cancelar turno ${appt.id_appointment}`}
 									onClick={() => onDelete?.(appt.id_appointment)}
-									disabled={appt.status.toLowerCase() === 'canceled'}
+									disabled={appt.status.toLowerCase() === 'cancelado'}
 								>
 									<Trash2 />
 								</DeleteButton>
 							)}
-							{isDoctor && appt.status != 'canceled' && (
-								<ViewButton
-									aria-label={`Agregar notas al turno ${appt.id_appointment}`}
-									onClick={() =>
-										router.push(
-											`/appointment-notes/${appt.id_appointment}`
-										)
-									}
-								>
-									<FileText />
-								</ViewButton>
-							)}
-							{isPatient &&
-								appt.status.toLowerCase() === 'completed' && (
+							{isDoctor &&
+								appt.status != 'cancelado' &&
+								appt.status !== 'completo' && (
 									<ViewButton
-										aria-label={`Hacer encuesta para turno ${appt.id_appointment}`}
+										aria-label={`Agregar notas al turno ${appt.id_appointment}`}
 										onClick={() =>
-											router.push(`/survey/${appt.id_appointment}`)
+											router.push(
+												`/appointment-notes/${appt.id_appointment}`
+											)
 										}
-										title="Calificar turno"
 									>
-										<Star />
+										<FileText />
 									</ViewButton>
 								)}
+							{isPatient && appt.status.toLowerCase() === '' && (
+								<ViewButton
+									aria-label={`Hacer encuesta para turno ${appt.id_appointment}`}
+									onClick={() =>
+										router.push(`/survey/${appt.id_appointment}`)
+									}
+									title="Calificar turno"
+								>
+									<Star />
+								</ViewButton>
+							)}
 						</Td>
 					</Tr>
 				))}

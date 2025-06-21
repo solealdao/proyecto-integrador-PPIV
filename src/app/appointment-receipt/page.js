@@ -3,7 +3,7 @@
 import PageLayout from '@/components/PageLayout';
 import styled from '@emotion/styled';
 import theme from '@/app/theme';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import useDoctors from '@/hooks/useDoctors';
 import usePatients from '@/hooks/usePatients';
@@ -30,7 +30,7 @@ const Header = styled.div`
 
 const Logo = styled.img`
 	width: 220px;
-	margin-bottom: 10px
+	margin-bottom: 10px;
 `;
 
 const Title = styled.h2`
@@ -64,35 +64,44 @@ const ButtonContainer = styled.div`
 
 export default function AppointmentReceiptPage() {
 	const router = useRouter();
-	const searchParams = useSearchParams();
-	
 	const { token } = useAuth();
-
 	const { doctors } = useDoctors(token);
-  	const { patients } = usePatients(token);
+	const { patients } = usePatients(token);
 
-  	const [doctorName, setDoctorName] = useState('');
-  	const [patientName, setPatientName] = useState('');
-  	const [loaded, setLoaded] = useState(false);
-
-	const doctorId = Number(searchParams.get('doctor'));
-	const patientId = Number(searchParams.get('patient'));
-	const date = searchParams.get('date');
-	const time = searchParams.get('time');
-	const appointmentId = searchParams.get('id');
+	const [doctorName, setDoctorName] = useState('');
+	const [patientName, setPatientName] = useState('');
+	const [appointmentId, setAppointmentId] = useState('');
+	const [date, setDate] = useState('');
+	const [time, setTime] = useState('');
+	const [loaded, setLoaded] = useState(false);
 
 	useEffect(() => {
-		if (doctors.length && patients.length) {
-			const doctor = doctors.find(d => d.id_user === Number(doctorId));
-			const patient = patients.find(p => p.id_user === Number(patientId));
+		const params = new URLSearchParams(window.location.search);
+		const doctorId = Number(params.get('doctor'));
+		const patientId = Number(params.get('patient'));
+		setAppointmentId(params.get('id') || '');
+		setDate(params.get('date') || '');
+		setTime(params.get('time') || '');
 
-			setDoctorName(doctor ? `${doctor.first_name} ${doctor.last_name}` : 'Desconocido/a');
-			setPatientName(patient ? `${patient.first_name} ${patient.last_name}` : 'Desconocido/a');
+		if (doctors.length && patients.length) {
+			const doctor = doctors.find((d) => d.id_user === doctorId);
+			const patient = patients.find((p) => p.id_user === patientId);
+
+			setDoctorName(
+				doctor
+					? `${doctor.first_name} ${doctor.last_name}`
+					: 'Desconocido/a'
+			);
+			setPatientName(
+				patient
+					? `${patient.first_name} ${patient.last_name}`
+					: 'Desconocido/a'
+			);
 			setLoaded(true);
 		}
-  	}, [doctors, patients, doctorId, patientId]);
+	}, [doctors, patients]);
 
- 	if (!loaded) return <div>Cargando...</div>;
+	if (!loaded) return <div>Cargando...</div>;
 
 	const printReceipt = () => {
 		window.print();
@@ -104,7 +113,7 @@ export default function AppointmentReceiptPage() {
 
 	const goToAppointmentManagement = () => {
 		router.push('/patient-appointment-management');
-	}
+	};
 
 	return (
 		<PageLayout
@@ -131,9 +140,15 @@ export default function AppointmentReceiptPage() {
 			</Container>
 
 			<ButtonContainer>
-				<ActionButton onClick={printReceipt}>Imprimir Comprobante</ActionButton>
-				<ActionButton onClick={goToHistoryAppointment}>Historial de Turnos</ActionButton>
-				<ActionButton onClick={goToAppointmentManagement}>Ir a Gestión de Turnos</ActionButton>
+				<ActionButton onClick={printReceipt}>
+					Imprimir Comprobante
+				</ActionButton>
+				<ActionButton onClick={goToHistoryAppointment}>
+					Historial de Turnos
+				</ActionButton>
+				<ActionButton onClick={goToAppointmentManagement}>
+					Ir a Gestión de Turnos
+				</ActionButton>
 			</ButtonContainer>
 		</PageLayout>
 	);

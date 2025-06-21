@@ -95,22 +95,6 @@ const Button = styled.button`
 	}
 `;
 
-const SmallText = styled.p`
-	color: ${theme.colors.darkText};
-	text-align: center;
-	font-size: 14px;
-	margin-top: 16px;
-
-	a {
-		color: #00a9a4;
-		text-decoration: none;
-		font-weight: 500;
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-`;
-
 const ErrorMsg = styled.p`
 	color: red;
 	text-align: center;
@@ -154,7 +138,9 @@ export default function LoginPage() {
 					<img src="/login_img.jpg" alt="Inicio" />
 				</ImageSection>
 				<FormSection>
-					<Logo><img src="/login-logo.png" alt="NUEVA CLÍNICA" /></Logo>
+					<Logo>
+						<img src="/login-logo.png" alt="NUEVA CLÍNICA" />
+					</Logo>
 					<Title>Bienvenido/a</Title>
 					<StyledForm onSubmit={handleSubmit}>
 						<Input
@@ -174,10 +160,6 @@ export default function LoginPage() {
 						<Button type="submit">Iniciar sesión</Button>
 						{error && <ErrorMsg>{error}</ErrorMsg>}
 					</StyledForm>
-					<SmallText>¿Has olvidado tu contraseña?</SmallText>
-					<SmallText>
-						¿Todavía no tienes cuenta? <a href="#">Crea una ahora</a>
-					</SmallText>
 				</FormSection>
 			</Card>
 		</Container>

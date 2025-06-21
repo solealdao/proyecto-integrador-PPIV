@@ -203,7 +203,8 @@ export default function AppointmentDetail() {
 		? `${patientData.first_name ?? ''} ${patientData.last_name ?? ''}`.trim()
 		: '';
 
-	const isCanceled = appointmentStatus === 'canceled';
+	const isCanceled = appointmentStatus === 'cancelado';
+	const isCompleted = appointmentStatus === 'completo';
 	const isDoctor = user?.id_user_type === 2;
 
 	return (
@@ -257,7 +258,7 @@ export default function AppointmentDetail() {
 					<option value="">{dateFormatter(date)}</option>
 					{availableDates.map((fecha) => (
 						<option key={fecha} value={fecha}>
-							{fecha}
+							{dateFormatter(fecha)}
 						</option>
 					))}
 				</Select>
@@ -276,29 +277,31 @@ export default function AppointmentDetail() {
 					<option value="">{timeFormatter(time)}</option>
 					{availableTimes.map((hora, index) => (
 						<option key={index} value={hora}>
-							{hora}
+							{timeFormatter(hora)}
 						</option>
 					))}
 				</Select>
 
 				<ButtonGroup>
-					{!editable ? (
-						<ActionButton
-							onClick={() => setEditable(true)}
-							disabled={isCanceled || isDoctor}
-						>
-							Modificar
-						</ActionButton>
-					) : (
-						<>
-							<ActionButton onClick={handleSubmit} disabled={isCanceled}>
-								Guardar Cambios
-							</ActionButton>
-							<ActionButton onClick={() => setEditable(false)}>
-								Cancelar
-							</ActionButton>
-						</>
-					)}
+					{!editable
+						? !isDoctor &&
+						  !isCanceled &&
+						  !isCompleted && (
+								<ActionButton onClick={() => setEditable(true)}>
+									Modificar
+								</ActionButton>
+						  )
+						: !isCanceled &&
+						  !isCompleted && (
+								<>
+									<ActionButton onClick={handleSubmit}>
+										Guardar Cambios
+									</ActionButton>
+									<ActionButton onClick={() => setEditable(false)}>
+										Cancelar
+									</ActionButton>
+								</>
+						  )}
 				</ButtonGroup>
 			</FormContainer>
 			<ToastContainer

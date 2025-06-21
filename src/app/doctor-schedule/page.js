@@ -129,7 +129,10 @@ export default function DoctorAgenda() {
 			try {
 				const doctorId = user.id_user;
 				const from = formatDate(weekStart);
-				const to = formatDate(new Date(weekStart.getTime() + 4 * 86400000));
+				// const to = formatDate(new Date(weekStart.getTime() + 4 * 86400000));
+				const to = formatDate(
+					new Date(weekStart.getFullYear(), weekStart.getMonth() + 1, 0)
+				);
 
 				const data = await fetchDoctorAgenda(doctorId, from, to, token);
 				setSlots(data.slots || []);
