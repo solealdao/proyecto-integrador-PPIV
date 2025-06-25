@@ -52,6 +52,18 @@ const Select = styled.select`
 	border: 1px solid #ccc;
 `;
 
+const NotesBox = styled.textarea`
+	background-color: ${theme.colors.lightText};
+	color: ${theme.colors.darkGreen};
+	padding: 10px;
+	font-size: 16px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	width: 100%;
+	min-height: 120px;
+	resize: none;
+`;
+
 const ButtonGroup = styled.div`
 	display: flex;
 	justify-content: center;
@@ -68,6 +80,7 @@ export default function AppointmentDetail() {
 
 	const { doctors, loading: loadingDoctors } = useDoctors(token);
 
+	const [appointmentData, setAppointmentData] = useState(null);
 	const [doctorId, setDoctorId] = useState('');
 	const [patientId, setPatientId] = useState(null);
 	const [patientData, setPatientData] = useState(null);
@@ -89,6 +102,7 @@ export default function AppointmentDetail() {
 	const fetchAppointmentDetails = async (id) => {
 		try {
 			const data = await getAppointmentById(id, token);
+			setAppointmentData(data);
 
 			setDate(data.date);
 			setTime(data.time);
@@ -205,8 +219,10 @@ export default function AppointmentDetail() {
 
 	const isCanceled = appointmentStatus === 'cancelado';
 	const isCompleted = appointmentStatus === 'completo';
+	const isRated = appointmentStatus === 'calificado';
 	const isDoctor = user?.id_user_type === 2;
 
+	console.log('APPOITNEMTN', appointmentData);
 	return (
 		<PageLayout
 			showImage={true}
@@ -282,11 +298,19 @@ export default function AppointmentDetail() {
 					))}
 				</Select>
 
+				{appointmentData?.history?.[0]?.notes && (
+					<>
+						<Label>Notas del médico</Label>
+						<NotesBox value={appointmentData.history[0].notes} disabled />
+					</>
+				)}
+
 				<ButtonGroup>
 					{!editable
 						? !isDoctor &&
 						  !isCanceled &&
-						  !isCompleted && (
+						  !isCompleted &&
+						  !isRated && (
 								<ActionButton onClick={() => setEditable(true)}>
 									Modificar
 								</ActionButton>

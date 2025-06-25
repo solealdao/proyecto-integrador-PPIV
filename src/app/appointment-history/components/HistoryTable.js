@@ -65,7 +65,7 @@ const StatusTd = styled.td`
 		switch (status.toLowerCase()) {
 			case 'confirmado':
 				return '#4caf50';
-			case 'pendiente':
+			case 'calificado':
 				return '#2196f3';
 			case 'cancelado':
 				return '#f44336';
@@ -148,7 +148,13 @@ export default function HistoryTable({
 						<Td>{`${appt.doctor?.first_name ?? '-'} ${
 							appt.doctor?.last_name ?? ''
 						}`}</Td>
-						<StatusTd status={appt.status}>{appt.status}</StatusTd>
+						<StatusTd status={appt.status}>
+							{isPatient
+								? appt.status
+								: appt.status === 'calificado'
+								? 'completo'
+								: appt.status}
+						</StatusTd>
 						<Td>
 							<ViewButton
 								aria-label={`Ver detalles del turno ${appt.id_appointment}`}
@@ -164,26 +170,24 @@ export default function HistoryTable({
 								<DeleteButton
 									aria-label={`Cancelar turno ${appt.id_appointment}`}
 									onClick={() => onDelete?.(appt.id_appointment)}
-									disabled={appt.status.toLowerCase() === 'cancelado'}
+									disabled={appt.status.toLowerCase() != 'confirmado'}
 								>
 									<Trash2 />
 								</DeleteButton>
 							)}
-							{isDoctor &&
-								appt.status != 'cancelado' &&
-								appt.status !== 'completo' && (
-									<ViewButton
-										aria-label={`Agregar notas al turno ${appt.id_appointment}`}
-										onClick={() =>
-											router.push(
-												`/appointment-notes/${appt.id_appointment}`
-											)
-										}
-									>
-										<FileText />
-									</ViewButton>
-								)}
-							{isPatient && appt.status.toLowerCase() === '' && (
+							{isDoctor && appt.status == 'confirmado' && (
+								<ViewButton
+									aria-label={`Agregar notas al turno ${appt.id_appointment}`}
+									onClick={() =>
+										router.push(
+											`/appointment-notes/${appt.id_appointment}`
+										)
+									}
+								>
+									<FileText />
+								</ViewButton>
+							)}
+							{isPatient && appt.status.toLowerCase() === 'completo' && (
 								<ViewButton
 									aria-label={`Hacer encuesta para turno ${appt.id_appointment}`}
 									onClick={() =>
